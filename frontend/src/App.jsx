@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Analytics } from "@vercel/analytics/react";
 
 function App() {
   const [status, setStatus] = useState("Checking...");
@@ -24,6 +25,7 @@ function App() {
     <div>
       <h1>Job Agent</h1>
       <p>Backend status: {status}</p>
+      <Analytics />
     </div>
   );
 }

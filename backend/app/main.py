@@ -1,46 +1,30 @@
-import logging
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
-from sqlalchemy import text
-from sqlalchemy.exc import SQLAlchemyError
 
-from .db import engine
-
-logger = logging.getLogger(__name__)
-
-app = FastAPI()
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "https://job-handler.vercel.app",
-    ],
-    allow_origin_regex=r"https://job-handler-.*\.vercel\.app",
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+from app.api.health import router as health_router
+from app.api.v1.router import api_router
+from app.core.config import get_settings
+from app.core.logging import configure_logging
 
 
-@app.get("/health")
-def health():
-    """Liveness probe that also verifies database connectivity.
+def create_app() -> FastAPI:
+    configure_logging()
+    settings = get_settings()
 
-    Returns 200 when the database answers, 503 otherwise. The response shape is
-    stable in both cases so the frontend can render a status without special-casing
-    HTTP errors.
-    """
-    try:
-        with engine.connect() as conn:
-            conn.execute(text("SELECT 1"))
-    except SQLAlchemyError:
-        logger.exception("Health check failed: database unreachable")
-        return JSONResponse(
-            status_code=503,
-            content={"status": "degraded", "database": "disconnected"},
-        )
+    app = FastAPI(title="Job Agent API")
 
-    return {"status": "ok", "database": "connected"}
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.cors_origins,
+        allow_origin_regex=settings.cors_origin_regex,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+    app.include_router(health_router)
+    app.include_router(api_router)
+    return app
+
+
+app = create_app()

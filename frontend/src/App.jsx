@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+import { apiFetch } from "./lib/api";
+
 function App() {
   const [health, setHealth] = useState({
     status: "Checking...",
@@ -7,24 +9,12 @@ function App() {
   });
 
   useEffect(() => {
-    const checkHealth = async () => {
-      try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/health`);
-
-        if (!res.ok) throw new Error("Health check failed");
-
-        const data = await res.json();
-        setHealth(data);
-      } catch (err) {
+    apiFetch("/health")
+      .then(setHealth)
+      .catch((err) => {
         console.error(err);
-        setHealth({
-          status: "Backend unreachable",
-          database: "Disconnected",
-        });
-      }
-    };
-
-    checkHealth();
+        setHealth({ status: "Backend unreachable", database: "Disconnected" });
+      });
   }, []);
 
   return (

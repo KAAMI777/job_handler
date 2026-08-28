@@ -1,11 +1,10 @@
 import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text          # ← ADD THIS
 from .db import engine
+
 app = FastAPI()
-
-
-
 
 app.add_middleware(
     CORSMiddleware,

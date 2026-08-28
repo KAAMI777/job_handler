@@ -7,6 +7,8 @@ function App() {
     const checkHealth = async () => {
       try {
         console.log("env is: " , import.meta.env.RENDER_API_URL);
+        console.log(import.meta.env);
+
 
         const res = await fetch(
           `${import.meta.env.RENDER_API_URL}/health`

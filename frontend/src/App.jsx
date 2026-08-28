@@ -6,6 +6,8 @@ function App() {
   useEffect(() => {
     const checkHealth = async () => {
       try {
+        console.log(import.meta.env.RENDER_API_URL);
+
         const res = await fetch(
           `${import.meta.env.RENDER_API_URL}/health`
         ); const data = await res.json();

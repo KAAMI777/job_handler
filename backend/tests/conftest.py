@@ -4,8 +4,9 @@ import os
 os.environ.setdefault("DATABASE_URL", "sqlite+pysqlite:///:memory:")
 
 import pytest
-from app.main import app
 from fastapi.testclient import TestClient
+
+from app.main import app
 
 
 @pytest.fixture

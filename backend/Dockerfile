@@ -10,10 +10,11 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
+RUN chmod +x scripts/start.sh
 
 # Run as a non-root user.
 RUN useradd --create-home --uid 1000 appuser
 USER appuser
 
-# Render injects $PORT; default to 10000 for local runs.
-CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-10000}"]
+# Applies migrations, then starts uvicorn on $PORT (Render injects it; default 10000).
+CMD ["sh", "scripts/start.sh"]

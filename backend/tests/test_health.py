@@ -1,5 +1,6 @@
-from app.api import health
 from sqlalchemy.exc import OperationalError
+
+from app.api import health
 
 
 def test_health_ok(client):

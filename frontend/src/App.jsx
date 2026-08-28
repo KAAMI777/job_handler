@@ -6,16 +6,16 @@ function App() {
   useEffect(() => {
     const checkHealth = async () => {
       try {
-        console.log(import.meta.env.RENDER_API_URL);
+        console.log("env is: " , import.meta.env.RENDER_API_URL);
 
         const res = await fetch(
           `${import.meta.env.RENDER_API_URL}/health`
         ); const data = await res.json();
         setStatus(data.status);
       } catch (err) {
-        setStatus("Backend unreachable");
-
-      }
+  console.error(err);
+  setStatus("Backend unreachable");
+}
     };
 
     checkHealth();

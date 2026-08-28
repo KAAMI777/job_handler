@@ -4,14 +4,15 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-frontend_url = os.getenv("FRONTEND_URL")
+# frontend_url = os.getenv("FRONTEND_URL")
 
 origins = [
     "http://localhost:5173",
+    "https://job-handler-n3m9.onrender.com"
 ]
 
-if frontend_url:
-    origins.append(frontend_url)
+# if frontend_url:
+#     origins.append(frontend_url)
 
 app.add_middleware(
     CORSMiddleware,

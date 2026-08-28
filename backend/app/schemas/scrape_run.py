@@ -5,6 +5,17 @@ from pydantic import BaseModel, ConfigDict
 from app.models.enums import RunStatus, RunType
 
 
+class ScrapeRunRequest(BaseModel):
+    run_type: RunType = RunType.SCHEDULED
+
+
+class ScrapeRunAccepted(BaseModel):
+    """202 response from POST /api/v1/scrape/run — poll the run for results."""
+
+    run_id: int
+    status: RunStatus
+
+
 class ScrapeRunRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -17,13 +28,3 @@ class ScrapeRunRead(BaseModel):
     new_jobs: int
     failed: int
     duration_seconds: float | None
-
-
-class ScrapeRunResult(BaseModel):
-    """The Phase 6 POST /api/v1/scrape/run response payload."""
-
-    run_id: int
-    checked: int
-    new_jobs: int
-    failed: int
-    duration: float

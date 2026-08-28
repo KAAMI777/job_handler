@@ -1,5 +1,7 @@
 from collections.abc import Iterator
+from typing import Annotated
 
+from fastapi import Depends
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
@@ -17,3 +19,7 @@ def get_db() -> Iterator[Session]:
         yield db
     finally:
         db.close()
+
+
+# Use as: ``def endpoint(db: DbSession): ...``
+DbSession = Annotated[Session, Depends(get_db)]

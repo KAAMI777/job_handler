@@ -1,7 +1,6 @@
 from fastapi import APIRouter
 
-api_router = APIRouter(prefix="/api/v1")
+from app.api.v1 import companies
 
-# Resource routers are included here as they land:
-#   from app.api.v1 import companies, jobs, scrape
-#   api_router.include_router(companies.router)
+api_router = APIRouter(prefix="/api/v1")
+api_router.include_router(companies.router)

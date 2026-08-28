@@ -1,24 +1,26 @@
 import { useEffect, useState } from "react";
 
 function App() {
-  const [status, setStatus] = useState("Checking...");
+  const [health, setHealth] = useState({
+    status: "Checking...",
+    database: "Checking...",
+  });
 
   useEffect(() => {
     const checkHealth = async () => {
       try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/health`);
 
-        console.log(import.meta.env);
+        if (!res.ok) throw new Error("Health check failed");
 
-
-        console.log(import.meta.env.VITE_API_URL);
-
-        const res = await fetch(
-          `${import.meta.env.VITE_API_URL}/health`
-        ); const data = await res.json();
-        setStatus(data.status);
+        const data = await res.json();
+        setHealth(data);
       } catch (err) {
         console.error(err);
-        setStatus("Backend unreachable");
+        setHealth({
+          status: "Backend unreachable",
+          database: "Disconnected",
+        });
       }
     };
 
@@ -26,9 +28,11 @@ function App() {
   }, []);
 
   return (
-    <div>
+    <div style={{ padding: "2rem", fontFamily: "sans-serif" }}>
       <h1>Job Agent</h1>
-      <p>Backend status: {status}</p>
+
+      <p><strong>API:</strong> {health.status}</p>
+      <p><strong>Database:</strong> {health.database}</p>
     </div>
   );
 }

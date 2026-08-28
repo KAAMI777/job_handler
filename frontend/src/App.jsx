@@ -7,7 +7,7 @@ function App() {
     const checkHealth = async () => {
       try {
         const res = await fetch(
-          `${import.meta.env.VITE_RENDER_API_URL}/health`
+          `${import.meta.env.RENDER_API_URL}/health`
         ); const data = await res.json();
         setStatus(data.status);
       } catch (err) {

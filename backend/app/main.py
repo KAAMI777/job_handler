@@ -21,4 +21,10 @@ app.add_middleware(
 
 @app.get("/health")
 def health():
-    return {"status": "ok"}
+    with engine.connect() as conn:
+        conn.execute(text("SELECT 1"))
+
+    return {
+        "status": "ok",
+        "database": "connected"
+    }

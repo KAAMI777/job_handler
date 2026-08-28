@@ -8,7 +8,8 @@ app = FastAPI()
 
 origins = [
     "http://localhost:5173",
-    "https://job-handler-4aoavbxig-kaami777.vercel.app"
+    "https://job-handler-4aoavbxig-kaami777.vercel.app",
+    "https://job-handler.vercel.app/"
 ]
 
 # if frontend_url:

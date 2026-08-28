@@ -1,0 +1,96 @@
+import json
+from pathlib import Path
+
+import httpx
+import pytest
+
+from app.models.enums import EmploymentType, ParserType
+from app.scrapers import ScraperError, get_scraper_class
+from app.scrapers.ashby import AshbyScraper
+from app.scrapers.base import BaseScraper
+from app.scrapers.greenhouse import GreenhouseScraper
+from app.scrapers.lever import LeverScraper
+from app.scrapers.normalize import normalize_employment_type
+
+FIXTURES = Path(__file__).parent / "fixtures"
+
+
+def _client(payload: object, *, status: int = 200, expect_url_contains: str | None = None):
+    def handler(request: httpx.Request) -> httpx.Response:
+        if expect_url_contains is not None:
+            assert expect_url_contains in str(request.url)
+        return httpx.Response(status, json=payload)
+
+    return httpx.Client(transport=httpx.MockTransport(handler))
+
+
+def _load(name: str) -> object:
+    return json.loads((FIXTURES / name).read_text())
+
+
+def test_greenhouse_parses_and_normalizes():
+    scraper = GreenhouseScraper(_client(_load("greenhouse.json"), expect_url_contains="acme"))
+    postings = scraper.scrape("https://boards.greenhouse.io/acme")
+
+    assert [p.title for p in postings] == ["Senior Backend Engineer", "Marketing Intern"]
+    first = postings[0]
+    assert first.source == "greenhouse"
+    assert first.external_id == "4012345"
+    assert first.location == "Bengaluru, India"
+    assert first.employment_type is EmploymentType.FULL_TIME
+    assert first.apply_url.endswith("/jobs/4012345")
+    assert postings[1].employment_type is EmploymentType.INTERNSHIP
+
+
+def test_lever_parses_and_converts_timestamp():
+    scraper = LeverScraper(_client(_load("lever.json"), expect_url_contains="/postings/beta"))
+    postings = scraper.scrape("https://jobs.lever.co/beta")
+
+    assert len(postings) == 2
+    assert postings[0].external_id == "a1b2c3d4-0000-1111-2222-333344445555"
+    assert postings[0].location == "Remote (India)"
+    assert postings[0].employment_type is EmploymentType.FULL_TIME
+    assert postings[0].posted_at is not None
+    assert postings[0].posted_at.date().isoformat() == "2025-08-01"
+
+
+def test_ashby_parses():
+    scraper = AshbyScraper(_client(_load("ashby.json")))
+    postings = scraper.scrape("https://jobs.ashbyhq.com/gamma")
+
+    assert len(postings) == 1
+    assert postings[0].title == "Platform Engineer"
+    assert postings[0].employment_type is EmploymentType.FULL_TIME
+
+
+def test_http_error_becomes_scraper_error():
+    scraper = GreenhouseScraper(_client({"error": "not found"}, status=404))
+    with pytest.raises(ScraperError):
+        scraper.scrape("https://boards.greenhouse.io/missing")
+
+
+def test_slug_extraction_requires_a_path():
+    with pytest.raises(ScraperError):
+        BaseScraper._slug_from_url("https://boards.greenhouse.io")
+
+
+def test_registry_maps_parser_types():
+    assert get_scraper_class(ParserType.GREENHOUSE) is GreenhouseScraper
+    assert get_scraper_class(ParserType.LEVER) is LeverScraper
+    with pytest.raises(ScraperError):
+        get_scraper_class(ParserType.WORKDAY)
+
+
+@pytest.mark.parametrize(
+    ("raw", "expected"),
+    [
+        ("Full-time", EmploymentType.FULL_TIME),
+        ("FullTime", EmploymentType.FULL_TIME),
+        ("intern", EmploymentType.INTERNSHIP),
+        ("Contract", EmploymentType.CONTRACT),
+        ("weird value", EmploymentType.OTHER),
+        (None, None),
+    ],
+)
+def test_normalize_employment_type(raw, expected):
+    assert normalize_employment_type(raw) == expected

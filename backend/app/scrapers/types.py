@@ -2,6 +2,8 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
+from app.models.enums import EmploymentType
+
 
 class JobPosting(BaseModel):
     """Normalized output of every scraper.
@@ -14,7 +16,7 @@ class JobPosting(BaseModel):
     external_id: str | None = None
     title: str
     location: str | None = None
-    employment_type: str | None = None
+    employment_type: EmploymentType | None = None
     apply_url: str
     description: str | None = None
     posted_at: datetime | None = None

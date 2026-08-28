@@ -1,0 +1,18 @@
+[
+  {
+    "id": "a1b2c3d4-0000-1111-2222-333344445555",
+    "text": "Full Stack Engineer",
+    "categories": { "location": "Remote (India)", "commitment": "Full-time", "team": "Product" },
+    "hostedUrl": "https://jobs.lever.co/beta/a1b2c3d4-0000-1111-2222-333344445555",
+    "createdAt": 1754006400000,
+    "descriptionPlain": "Ship features end to end."
+  },
+  {
+    "id": "99998888-7777-6666-5555-444433332222",
+    "text": "Sales Development Representative",
+    "categories": { "location": "New York, NY", "commitment": "Full-time", "team": "Sales" },
+    "hostedUrl": "https://jobs.lever.co/beta/99998888-7777-6666-5555-444433332222",
+    "createdAt": 1754092800000,
+    "descriptionPlain": "Grow the pipeline."
+  }
+]

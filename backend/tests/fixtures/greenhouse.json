@@ -1,0 +1,22 @@
+{
+  "jobs": [
+    {
+      "id": 4012345,
+      "title": "Senior Backend Engineer",
+      "location": { "name": "Bengaluru, India" },
+      "absolute_url": "https://boards.greenhouse.io/acme/jobs/4012345",
+      "updated_at": "2026-08-01T10:00:00-04:00",
+      "metadata": [{ "name": "Employment Type", "value": "Full-time" }],
+      "content": "<p>Build things.</p>"
+    },
+    {
+      "id": 4012346,
+      "title": "Marketing Intern",
+      "location": { "name": "Remote - US" },
+      "absolute_url": "https://boards.greenhouse.io/acme/jobs/4012346",
+      "updated_at": "2026-08-02T09:00:00-04:00",
+      "metadata": [{ "name": "Employment Type", "value": "Intern" }],
+      "content": "<p>Help out.</p>"
+    }
+  ]
+}

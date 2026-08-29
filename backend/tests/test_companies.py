@@ -1,3 +1,6 @@
+from app.models.enums import ParserType
+from app.services import company_service
+from app.services.ats_resolver import ResolvedAts
 from tests.conftest import requires_db
 
 pytestmark = requires_db
@@ -61,6 +64,50 @@ def test_update_url_and_conflict(api_client):
         f"/api/v1/companies/{a['id']}", json={"career_url": b["career_url"]}
     )
     assert clash.status_code == 409
+
+
+def test_create_auto_detects_parser_type(api_client, monkeypatch):
+    monkeypatch.setattr(
+        company_service.ats_resolver,
+        "resolve",
+        lambda url: ResolvedAts(ParserType.GREENHOUSE, "https://boards.greenhouse.io/figma"),
+    )
+    created = api_client.post(
+        "/api/v1/companies",
+        json={"name": "Figma", "career_url": "https://www.figma.com/careers/"},
+    )
+    assert created.status_code == 201
+    body = created.json()
+    assert body["parser_type"] == "greenhouse"
+    assert body["career_url"] == "https://boards.greenhouse.io/figma"
+    assert body["source_url"] == "https://www.figma.com/careers/"
+
+
+def test_create_422_when_ats_not_detected(api_client, monkeypatch):
+    monkeypatch.setattr(company_service.ats_resolver, "resolve", lambda url: None)
+    resp = api_client.post(
+        "/api/v1/companies",
+        json={"name": "Mystery", "career_url": "https://mystery.example/jobs"},
+    )
+    assert resp.status_code == 422
+
+
+def test_resolve_endpoint(api_client, monkeypatch):
+    from app.api.v1 import companies as companies_api
+
+    monkeypatch.setattr(
+        companies_api.ats_resolver,
+        "resolve",
+        lambda url: ResolvedAts(ParserType.ASHBY, "https://jobs.ashbyhq.com/notion"),
+    )
+    resp = api_client.post(
+        "/api/v1/companies/resolve", json={"url": "https://www.notion.so/careers"}
+    )
+    assert resp.status_code == 200
+    assert resp.json() == {
+        "parser_type": "ashby",
+        "career_url": "https://jobs.ashbyhq.com/notion",
+    }
 
 
 def test_missing_company_is_404(api_client):

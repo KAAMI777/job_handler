@@ -10,10 +10,15 @@ from sqlalchemy.orm import Session
 
 from app.models.company import Company
 from app.schemas.company import CompanyCreate, CompanyUpdate
+from app.services import ats_resolver
 
 
 class CareerUrlExistsError(Exception):
     """Raised when a company with the same career_url already exists."""
+
+
+class AtsNotDetectedError(Exception):
+    """Raised when no parser_type was given and the ATS could not be detected."""
 
 
 def list_companies(db: Session, *, active_only: bool = False) -> list[Company]:
@@ -35,14 +40,28 @@ def _career_url_taken(db: Session, career_url: str, *, exclude_id: int | None = 
 
 
 def create_company(db: Session, data: CompanyCreate) -> Company:
-    career_url = str(data.career_url)
+    provided_url = str(data.career_url)
+    parser_type = data.parser_type
+    career_url = provided_url
+    source_url: str | None = None
+
+    if parser_type is None:
+        resolved = ats_resolver.resolve(provided_url)
+        if resolved is None:
+            raise AtsNotDetectedError(provided_url)
+        parser_type = resolved.parser_type
+        career_url = resolved.career_url
+        if career_url != provided_url:
+            source_url = provided_url
+
     if _career_url_taken(db, career_url):
         raise CareerUrlExistsError(career_url)
 
     company = Company(
         name=data.name,
         career_url=career_url,
-        parser_type=data.parser_type,
+        source_url=source_url,
+        parser_type=parser_type,
         active=data.active,
     )
     db.add(company)

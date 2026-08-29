@@ -3,13 +3,33 @@ from typing import Annotated
 from fastapi import APIRouter, HTTPException, Query, status
 
 from app.db.session import DbSession
-from app.schemas.company import CompanyCreate, CompanyRead, CompanyUpdate
-from app.services import company_service
-from app.services.company_service import CareerUrlExistsError
+from app.schemas.company import (
+    AtsResolveRequest,
+    AtsResolveResult,
+    CompanyCreate,
+    CompanyRead,
+    CompanyUpdate,
+)
+from app.services import ats_resolver, company_service
+from app.services.company_service import AtsNotDetectedError, CareerUrlExistsError
 
 router = APIRouter(prefix="/companies", tags=["companies"])
 
 _CONFLICT = "A company with this career_url already exists"
+_NOT_DETECTED = (
+    "Could not detect the ATS from that URL. Pass parser_type explicitly "
+    "(greenhouse, lever, ashby, workday, smartrecruiters, amazon, netflix) "
+    "with the ATS board URL."
+)
+
+
+@router.post("/resolve", response_model=AtsResolveResult)
+def resolve_ats(payload: AtsResolveRequest) -> AtsResolveResult:
+    """Detect the ATS + canonical career URL for a careers-page link, without saving."""
+    resolved = ats_resolver.resolve(str(payload.url))
+    if resolved is None:
+        raise HTTPException(422, _NOT_DETECTED)
+    return AtsResolveResult(parser_type=resolved.parser_type, career_url=resolved.career_url)
 
 
 @router.get("", response_model=list[CompanyRead])
@@ -22,8 +42,11 @@ def list_companies(
 
 @router.post("", response_model=CompanyRead, status_code=status.HTTP_201_CREATED)
 def create_company(payload: CompanyCreate, db: DbSession) -> CompanyRead:
+    """Add a company. Omit ``parser_type`` to auto-detect the ATS from ``career_url``."""
     try:
         return company_service.create_company(db, payload)
+    except AtsNotDetectedError as exc:
+        raise HTTPException(422, _NOT_DETECTED) from exc
     except CareerUrlExistsError as exc:
         raise HTTPException(status.HTTP_409_CONFLICT, _CONFLICT) from exc
 

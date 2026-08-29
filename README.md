@@ -36,9 +36,13 @@ docker compose up --build
 Try it:
 
 ```bash
+# Add a company by pasting its careers-page link — the ATS is auto-detected.
 curl -X POST localhost:10000/api/v1/companies \
   -H 'content-type: application/json' \
-  -d '{"name":"Discord","career_url":"https://boards.greenhouse.io/discord","parser_type":"greenhouse"}'
+  -d '{"name":"Figma","career_url":"https://www.figma.com/careers/"}'
+# (or POST /api/v1/companies/resolve first to preview the detection)
+# If detection fails (some fully client-rendered pages), pass parser_type + the ATS
+# board URL explicitly, e.g. {"parser_type":"greenhouse","career_url":"https://boards.greenhouse.io/figma"}
 
 curl -X POST localhost:10000/api/v1/scrape/run -H 'content-type: application/json' -d '{}'
 curl localhost:10000/api/v1/scrape/runs      # poll until status != running

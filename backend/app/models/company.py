@@ -14,6 +14,8 @@ class Company(TimestampMixin, Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(200), nullable=False)
     career_url: Mapped[str] = mapped_column(String(500), unique=True, nullable=False)
+    # What the user originally provided, before ATS resolution (may equal career_url).
+    source_url: Mapped[str | None] = mapped_column(String(500))
     parser_type: Mapped[ParserType] = mapped_column(
         pg_enum(ParserType, "parser_type"), nullable=False
     )

@@ -1,0 +1,332 @@
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+.note {
+  font-size: var(--fs-xs);
+  color: var(--text-secondary);
+  line-height: var(--lh-body);
+}
+.formError {
+  font-size: var(--fs-xs);
+  color: var(--danger);
+}
+.divider {
+  height: 1px;
+  background: var(--line);
+  margin: var(--sp-1) 0;
+}
+
+/* ---- stats readout ---- */
+.readout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+}
+.cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--surface-1);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  min-width: 92px;
+}
+.cellNum {
+  font-size: var(--fs-md);
+  color: var(--accent-bright);
+}
+.cellLabel {
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+/* ---- add-company form ---- */
+.addForm,
+.ruleForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+.addRow {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--sp-3);
+  align-items: end;
+}
+.resolved {
+  font-size: var(--fs-xs);
+  color: var(--text-secondary);
+}
+.resolvedUrl {
+  color: var(--text-dim);
+  word-break: break-all;
+}
+
+/* ---- company list ---- */
+.companyList {
+  display: flex;
+  flex-direction: column;
+}
+.companyItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-3) 0;
+  border-bottom: 1px solid var(--line);
+}
+.companyItem:last-child {
+  border-bottom: 0;
+}
+.companyItem[data-inactive] {
+  opacity: 0.5;
+}
+.companyInfo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+.companyName {
+  font-size: var(--fs-sm);
+  color: var(--text);
+}
+.companyMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.health {
+  font-size: var(--fs-2xs);
+  color: var(--text-secondary);
+}
+.health[data-bad] {
+  color: var(--danger);
+}
+.companyActions {
+  display: flex;
+  gap: var(--sp-3);
+  flex-shrink: 0;
+}
+.linkBtn {
+  background: none;
+  border: 0;
+  color: var(--text-secondary);
+  font-size: var(--fs-xs);
+  cursor: pointer;
+  padding: 0;
+}
+.linkBtn:hover {
+  color: var(--text);
+}
+.linkBtn.danger:hover {
+  color: var(--danger);
+}
+
+/* ---- field selector ---- */
+.fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+.fieldChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5ch;
+  padding: 0.35em 0.7em;
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: var(--fs-xs);
+  cursor: pointer;
+}
+.fieldChip[data-active] {
+  color: var(--accent-bright);
+  border-color: var(--accent-line);
+  background: var(--accent-wash);
+}
+.fieldChip:disabled {
+  cursor: not-allowed;
+  color: var(--text-dim);
+}
+.soon {
+  font-size: var(--fs-2xs);
+  color: var(--text-dim);
+}
+
+/* ---- keyword rules ---- */
+.ruleForm {
+  display: grid;
+  grid-template-columns: 1fr 1fr 84px auto;
+  gap: var(--sp-3);
+  align-items: end;
+}
+.ruleGroups {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+.ruleGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.ruleRole {
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.ruleChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+.ruleChip {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.ruleChip[data-off] {
+  opacity: 0.45;
+}
+.ruleToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4ch;
+  padding: 0.24em 0.55em;
+  background: transparent;
+  border: 0;
+  color: var(--text);
+  font-size: var(--fs-xs);
+  cursor: pointer;
+}
+.ruleToggle:hover {
+  background: var(--accent-wash);
+}
+.ruleWeight {
+  color: var(--text-dim);
+  font-size: var(--fs-2xs);
+}
+.ruleDelete {
+  padding: 0 0.45em;
+  background: transparent;
+  border: 0;
+  border-left: 1px solid var(--line);
+  color: var(--text-dim);
+  cursor: pointer;
+}
+.ruleDelete:hover {
+  color: var(--danger);
+  background: var(--danger-wash);
+}
+
+/* ---- run log ---- */
+.runHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+}
+.runList {
+  display: flex;
+  flex-direction: column;
+}
+.runItem {
+  display: grid;
+  grid-template-columns: 5.5rem 4.5rem 1fr auto;
+  gap: var(--sp-2);
+  align-items: baseline;
+  padding: var(--sp-2) 0;
+  border-bottom: 1px solid var(--line);
+  font-size: var(--fs-xs);
+}
+.runItem:last-child {
+  border-bottom: 0;
+}
+.runWhen {
+  color: var(--text-dim);
+}
+.runStatus {
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  font-size: var(--fs-2xs);
+  letter-spacing: 0.06em;
+}
+.runItem[data-status="success"] .runStatus {
+  color: var(--accent);
+}
+.runItem[data-status="failed"] .runStatus {
+  color: var(--danger);
+}
+.runItem[data-status="partial"] .runStatus {
+  color: var(--amber);
+}
+.runCounts {
+  color: var(--text-secondary);
+}
+.runFail {
+  color: var(--danger);
+}
+.runDur {
+  color: var(--text-dim);
+}
+
+/* ---- saved jobs / tabs ---- */
+.tabs {
+  display: flex;
+  gap: var(--sp-1);
+  border-bottom: 1px solid var(--line);
+}
+.tab {
+  padding: 0.4em 0.8em;
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--text-secondary);
+  font-size: var(--fs-xs);
+  cursor: pointer;
+  translate: 0 1px;
+}
+.tab[data-on] {
+  color: var(--accent-bright);
+  border-bottom-color: var(--accent);
+}
+
+/* ---- notify ---- */
+.check {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-sm);
+  color: var(--text);
+  cursor: pointer;
+}
+.check input {
+  accent-color: var(--accent);
+  width: 15px;
+  height: 15px;
+}
+
+@media (max-width: 560px) {
+  .ruleForm {
+    grid-template-columns: 1fr 1fr;
+  }
+  .addRow {
+    grid-template-columns: 1fr;
+  }
+  .runItem {
+    grid-template-columns: 1fr auto;
+    row-gap: 0;
+  }
+}

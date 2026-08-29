@@ -1,0 +1,33 @@
+.boot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  font-size: var(--fs-sm);
+  line-height: 1.7;
+}
+
+.line {
+  display: flex;
+  gap: 1ch;
+  color: var(--text-secondary);
+}
+.tag {
+  flex-shrink: 0;
+  color: var(--accent-dim);
+}
+.line[data-kind="ok"] .tag {
+  color: var(--accent);
+}
+.line[data-kind="run"] .tag {
+  color: var(--amber);
+}
+.line[data-kind="cmd"] {
+  color: var(--text);
+}
+.line[data-kind="ready"] {
+  color: var(--accent-bright);
+  margin-top: var(--sp-2);
+}
+.text {
+  overflow-wrap: anywhere;
+}

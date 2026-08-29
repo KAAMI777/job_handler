@@ -16,6 +16,7 @@ class ParserType(StrEnum):
     LEVER = "lever"
     ASHBY = "ashby"
     WORKDAY = "workday"
+    SMARTRECRUITERS = "smartrecruiters"
     CUSTOM = "custom"
 
 

@@ -59,7 +59,13 @@ class BaseScraper(ABC):
 
     def _get_json(self, url: str) -> Any:
         """GET ``url`` and return parsed JSON, retrying transient failures."""
+        return self._request_json("GET", url)
 
+    def _post_json(self, url: str, json: Any) -> Any:
+        """POST ``json`` to ``url`` and return parsed JSON, retrying transient failures."""
+        return self._request_json("POST", url, json=json)
+
+    def _request_json(self, method: str, url: str, *, json: Any = None) -> Any:
         @retry(
             reraise=True,
             stop=stop_after_attempt(self._retries + 1),
@@ -67,7 +73,7 @@ class BaseScraper(ABC):
             retry=retry_if_exception(_is_transient),
         )
         def _do_request() -> Any:
-            response = self._client.get(url)
+            response = self._client.request(method, url, json=json)
             response.raise_for_status()
             return response.json()
 

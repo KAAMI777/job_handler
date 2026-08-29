@@ -11,6 +11,8 @@ from app.scrapers.base import BaseScraper
 from app.scrapers.greenhouse import GreenhouseScraper
 from app.scrapers.lever import LeverScraper
 from app.scrapers.normalize import normalize_employment_type
+from app.scrapers.smartrecruiters import SmartRecruitersScraper
+from app.scrapers.workday import WorkdayScraper
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
@@ -63,6 +65,44 @@ def test_ashby_parses():
     assert postings[0].employment_type is EmploymentType.FULL_TIME
 
 
+def test_workday_parses_and_builds_apply_url():
+    scraper = WorkdayScraper(
+        _client(_load("workday.json"), expect_url_contains="/wday/cxs/acme/Careers/jobs")
+    )
+    postings = scraper.scrape("https://acme.wd1.myworkdayjobs.com/en-US/Careers")
+
+    assert [p.title for p in postings] == [
+        "Senior Software Engineer, Backend",
+        "Enterprise Account Executive",
+    ]
+    first = postings[0]
+    assert first.source == "workday"
+    assert first.external_id == "JR12345"
+    assert first.location == "India, Karnataka, Bengaluru"
+    assert first.apply_url == (
+        "https://acme.wd1.myworkdayjobs.com/en-US/Careers"
+        "/job/India-Bengaluru/Senior-Software-Engineer_JR12345"
+    )
+
+
+def test_workday_rejects_non_workday_url():
+    with pytest.raises(ScraperError):
+        WorkdayScraper(_client({})).scrape("https://boards.greenhouse.io/acme")
+
+
+def test_smartrecruiters_parses():
+    scraper = SmartRecruitersScraper(
+        _client(_load("smartrecruiters.json"), expect_url_contains="/companies/Acme/postings")
+    )
+    postings = scraper.scrape("https://careers.smartrecruiters.com/Acme")
+
+    assert len(postings) == 1
+    assert postings[0].external_id == "743999900000001"
+    assert postings[0].location == "Bengaluru, Karnataka, in"
+    assert postings[0].employment_type is EmploymentType.FULL_TIME
+    assert postings[0].apply_url == "https://jobs.smartrecruiters.com/Acme/743999900000001"
+
+
 def test_http_error_becomes_scraper_error():
     scraper = GreenhouseScraper(_client({"error": "not found"}, status=404))
     with pytest.raises(ScraperError):
@@ -77,8 +117,10 @@ def test_slug_extraction_requires_a_path():
 def test_registry_maps_parser_types():
     assert get_scraper_class(ParserType.GREENHOUSE) is GreenhouseScraper
     assert get_scraper_class(ParserType.LEVER) is LeverScraper
+    assert get_scraper_class(ParserType.WORKDAY) is WorkdayScraper
+    assert get_scraper_class(ParserType.SMARTRECRUITERS) is SmartRecruitersScraper
     with pytest.raises(ScraperError):
-        get_scraper_class(ParserType.WORKDAY)
+        get_scraper_class(ParserType.CUSTOM)
 
 
 @pytest.mark.parametrize(

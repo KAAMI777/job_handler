@@ -1,0 +1,14 @@
+{
+  "offset": 0,
+  "limit": 100,
+  "totalFound": 1,
+  "content": [
+    {
+      "id": "743999900000001",
+      "name": "Backend Engineer",
+      "location": { "city": "Bengaluru", "region": "Karnataka", "country": "in" },
+      "typeOfEmployment": { "label": "Full-time" },
+      "releasedDate": "2026-08-10T09:00:00.000Z"
+    }
+  ]
+}

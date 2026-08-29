@@ -72,9 +72,15 @@ def send_new_jobs_digest(db: Session, run: ScrapeRun) -> bool:
             json=payload,
             timeout=15.0,
         )
-        response.raise_for_status()
     except httpx.HTTPError as exc:
-        logger.warning("Email digest failed to send: %s", exc)
+        logger.warning("Email digest request failed: %s", exc)
+        return False
+
+    if response.status_code >= 400:
+        # Resend's body carries the real reason (bad key, unverified recipient, ...).
+        logger.warning(
+            "Email digest rejected by Resend (%s): %s", response.status_code, response.text[:500]
+        )
         return False
 
     logger.info("Email digest sent for run %s (%s jobs)", run.id, len(rows))

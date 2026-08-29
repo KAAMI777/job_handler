@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
-from sqlalchemy import select, update
+from sqlalchemy import func, select, update
 from sqlalchemy.orm import Session
 
 from app.models.company import Company
@@ -74,6 +74,41 @@ def upsert_job(
 
     db.flush()
     return job, created
+
+
+def list_jobs(
+    db: Session,
+    *,
+    company_id: int | None = None,
+    min_score: int | None = None,
+    role: str | None = None,
+    is_relevant: bool | None = True,
+    is_active: bool | None = True,
+    limit: int = 50,
+    offset: int = 0,
+) -> tuple[list[Job], int]:
+    """Return a page of jobs matching the filters, plus the total match count."""
+    filters = []
+    if company_id is not None:
+        filters.append(Job.company_id == company_id)
+    if min_score is not None:
+        filters.append(Job.score >= min_score)
+    if role is not None:
+        filters.append(Job.matched_roles.contains([role]))
+    if is_relevant is not None:
+        filters.append(Job.is_relevant.is_(is_relevant))
+    if is_active is not None:
+        filters.append(Job.is_active.is_(is_active))
+
+    total = db.scalar(select(func.count()).select_from(Job).where(*filters)) or 0
+    stmt = (
+        select(Job)
+        .where(*filters)
+        .order_by(Job.score.desc(), Job.last_seen_at.desc())
+        .limit(limit)
+        .offset(offset)
+    )
+    return list(db.scalars(stmt)), total
 
 
 def deactivate_missing(db: Session, company_id: int, seen_hashes: set[str]) -> int:

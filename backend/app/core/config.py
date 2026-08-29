@@ -22,7 +22,8 @@ class Settings(BaseSettings):
 
     database_url: str = Field(
         ...,
-        description="SQLAlchemy database URL, e.g. postgresql+psycopg2://user:pass@host/db",
+        description="Database URL. Bare postgres:// / postgresql:// URLs (as Supabase and "
+        "Render hand them out) are rewritten to use the psycopg (v3) driver.",
     )
 
     # Comma-separated in the environment, e.g. "http://localhost:5173,https://app.example.com".
@@ -34,6 +35,20 @@ class Settings(BaseSettings):
     def _split_cors_origins(cls, value: object) -> object:
         if isinstance(value, str):
             return [origin.strip() for origin in value.split(",") if origin.strip()]
+        return value
+
+    @field_validator("database_url", mode="after")
+    @classmethod
+    def _use_psycopg_driver(cls, value: str) -> str:
+        """Normalize Postgres URLs to the psycopg (v3) driver SQLAlchemy expects.
+
+        ``postgres://`` and ``postgresql://`` -> ``postgresql+psycopg://``;
+        an explicit ``postgresql+psycopg2://`` is also moved to psycopg v3.
+        Non-Postgres URLs (e.g. sqlite in tests) pass through untouched.
+        """
+        for prefix in ("postgres://", "postgresql://", "postgresql+psycopg2://"):
+            if value.startswith(prefix):
+                return "postgresql+psycopg://" + value[len(prefix) :]
         return value
 
     @property

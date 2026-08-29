@@ -1,14 +1,14 @@
-import os
-
 import pytest
 from alembic import command
 from alembic.config import Config
 from sqlalchemy import create_engine, inspect
 
-DATABASE_URL = os.environ.get("DATABASE_URL", "")
+from app.core.config import get_settings
+
+DATABASE_URL = get_settings().database_url
 
 pytestmark = pytest.mark.skipif(
-    not DATABASE_URL.startswith(("postgresql", "postgres")),
+    not DATABASE_URL.startswith("postgresql"),
     reason="Migration test needs a Postgres DATABASE_URL (enum/JSONB types).",
 )
 

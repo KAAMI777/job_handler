@@ -10,6 +10,7 @@ class JobRead(BaseModel):
 
     id: int
     company_id: int
+    source: str | None
     title: str
     location: str | None
     country: str | None
@@ -24,13 +25,8 @@ class JobRead(BaseModel):
     created_at: datetime
 
 
-class JobListParams(BaseModel):
-    """Query parameters for the jobs list endpoint (Phase 7)."""
-
-    company_id: int | None = None
-    min_score: int | None = None
-    role: str | None = None
-    is_relevant: bool = True
-    is_active: bool = True
-    limit: int = 50
-    offset: int = 0
+class JobList(BaseModel):
+    items: list[JobRead]
+    total: int
+    limit: int
+    offset: int

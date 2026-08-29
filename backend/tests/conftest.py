@@ -8,10 +8,12 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 
+from app.core.config import get_settings
 from app.main import app
 
-_PG_URL = os.environ["DATABASE_URL"]
-_HAS_PG = _PG_URL.startswith(("postgresql", "postgres"))
+# Normalized by Settings (e.g. postgres:// -> postgresql+psycopg://).
+_PG_URL = get_settings().database_url
+_HAS_PG = _PG_URL.startswith("postgresql")
 
 requires_db = pytest.mark.skipif(
     not _HAS_PG, reason="needs a Postgres DATABASE_URL (enum/JSONB types)"

@@ -1,0 +1,114 @@
+.row {
+  display: flex;
+  gap: var(--sp-4);
+  padding: var(--sp-4) 0;
+  border-bottom: 1px solid var(--line);
+}
+.row:last-child {
+  border-bottom: 0;
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.headline {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-3);
+}
+.score {
+  flex-shrink: 0;
+  font-size: var(--fs-xs);
+  color: var(--accent);
+  border: 1px solid var(--accent-line);
+  border-radius: var(--radius-sm);
+  padding: 0.1em 0.4em;
+  background: var(--accent-wash);
+}
+.title {
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5ch;
+  font-size: var(--fs-xs);
+  color: var(--text-secondary);
+}
+.sep {
+  color: var(--text-dim);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--sp-2);
+  flex-shrink: 0;
+}
+.saveGroup {
+  display: flex;
+  gap: var(--sp-2);
+}
+.saveBtn {
+  padding: 0.25em 0.55em;
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-2xs);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out);
+  white-space: nowrap;
+}
+.saveBtn:hover {
+  color: var(--text);
+  border-color: var(--accent-line);
+}
+.saveBtn[data-on] {
+  color: var(--accent-bright);
+  border-color: var(--accent-line);
+  background: var(--accent-wash);
+}
+
+.apply {
+  padding: 0.32em 0.7em;
+  border: 1px solid var(--accent-line);
+  border-radius: var(--radius-sm);
+  background: var(--accent-wash);
+  color: var(--accent-bright);
+  font-size: var(--fs-xs);
+}
+.apply:hover {
+  color: var(--accent-bright);
+  box-shadow: var(--glow-accent);
+}
+
+@media (max-width: 620px) {
+  .row {
+    flex-direction: column;
+    gap: var(--sp-3);
+  }
+  .actions {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}

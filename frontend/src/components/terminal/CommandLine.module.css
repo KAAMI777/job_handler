@@ -1,0 +1,55 @@
+.line {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5ch;
+  font-size: var(--fs-sm);
+  color: var(--text);
+}
+.dollar {
+  color: var(--accent-dim);
+}
+.cmd {
+  color: var(--text-secondary);
+}
+.line[data-running] .cmd {
+  color: var(--text);
+}
+
+.dots {
+  width: 3ch;
+  color: var(--accent);
+}
+.dots::after {
+  content: "";
+  animation: dots 1.2s steps(4, end) infinite;
+}
+@keyframes dots {
+  0% {
+    content: "";
+  }
+  25% {
+    content: ".";
+  }
+  50% {
+    content: "..";
+  }
+  75% {
+    content: "...";
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dots::after {
+    content: "...";
+    animation: none;
+  }
+}
+
+.exit {
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--danger);
+}
+.exit[data-ok] {
+  color: var(--accent);
+}

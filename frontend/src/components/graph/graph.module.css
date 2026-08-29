@@ -1,0 +1,90 @@
+.canvas {
+  position: absolute;
+  inset: 0;
+  background: var(--bg);
+}
+
+/* React Flow overrides — keep the terminal world */
+.canvas :global(.react-flow__background) {
+  color: var(--line);
+}
+.canvas :global(.react-flow__attribution) {
+  display: none;
+}
+.canvas :global(.react-flow__controls) {
+  background: var(--surface-2);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-panel);
+  overflow: hidden;
+}
+.canvas :global(.react-flow__controls-button) {
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--line);
+  color: var(--text-secondary);
+  width: 30px;
+  height: 30px;
+}
+.canvas :global(.react-flow__controls-button:hover) {
+  background: var(--surface-3);
+  color: var(--accent);
+}
+.canvas :global(.react-flow__controls-button svg) {
+  fill: currentColor;
+}
+.canvas :global(.react-flow__minimap) {
+  background: var(--surface-1);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.edge {
+  stroke: var(--accent);
+  stroke-width: 1.4;
+  opacity: 0.5;
+  filter: var(--glow-edge);
+}
+.edgeFaint {
+  stroke: var(--accent-dim);
+  stroke-width: 1;
+  opacity: 0.32;
+  filter: none;
+}
+.edgeAgent {
+  stroke-dasharray: 3 4;
+}
+
+/* toolbar (own chrome, top-left, below the nav) */
+.toolbar {
+  position: absolute;
+  left: var(--sp-4);
+  top: 68px;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  max-width: 62vw;
+}
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 0.4em 0.7em;
+  background: var(--overlay);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-xs);
+  color: var(--text-secondary);
+  backdrop-filter: blur(3px);
+}
+.statusPrompt {
+  color: var(--accent-dim);
+}
+
+.center {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--sp-6);
+}

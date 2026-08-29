@@ -1,8 +1,10 @@
 from app.models.enums import ParserType
+from app.scrapers.amazon import AmazonScraper
 from app.scrapers.ashby import AshbyScraper
 from app.scrapers.base import BaseScraper, ScraperError
 from app.scrapers.greenhouse import GreenhouseScraper
 from app.scrapers.lever import LeverScraper
+from app.scrapers.netflix import NetflixScraper
 from app.scrapers.smartrecruiters import SmartRecruitersScraper
 from app.scrapers.workday import WorkdayScraper
 
@@ -12,6 +14,8 @@ _REGISTRY: dict[ParserType, type[BaseScraper]] = {
     ParserType.ASHBY: AshbyScraper,
     ParserType.WORKDAY: WorkdayScraper,
     ParserType.SMARTRECRUITERS: SmartRecruitersScraper,
+    ParserType.AMAZON: AmazonScraper,
+    ParserType.NETFLIX: NetflixScraper,
 }
 
 

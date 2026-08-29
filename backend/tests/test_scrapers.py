@@ -6,10 +6,12 @@ import pytest
 
 from app.models.enums import EmploymentType, ParserType
 from app.scrapers import ScraperError, get_scraper_class
+from app.scrapers.amazon import AmazonScraper
 from app.scrapers.ashby import AshbyScraper
 from app.scrapers.base import BaseScraper
 from app.scrapers.greenhouse import GreenhouseScraper
 from app.scrapers.lever import LeverScraper
+from app.scrapers.netflix import NetflixScraper
 from app.scrapers.normalize import normalize_employment_type
 from app.scrapers.smartrecruiters import SmartRecruitersScraper
 from app.scrapers.workday import WorkdayScraper
@@ -103,6 +105,39 @@ def test_smartrecruiters_parses():
     assert postings[0].apply_url == "https://jobs.smartrecruiters.com/Acme/743999900000001"
 
 
+def test_amazon_parses_india_scoped_and_flags_interns():
+    scraper = AmazonScraper(
+        _client(_load("amazon.json"), expect_url_contains="normalized_country_code%5B%5D=IND")
+    )
+    postings = scraper.scrape("https://www.amazon.jobs")
+
+    assert [p.title for p in postings] == [
+        "Software Development Engineer, Payments",
+        "Software Dev Engineer Intern",
+    ]
+    first = postings[0]
+    assert first.source == "amazon"
+    assert first.external_id == "10517816"
+    assert first.location == "Bengaluru, Karnataka, IND"
+    assert first.employment_type is EmploymentType.FULL_TIME
+    assert first.apply_url == (
+        "https://www.amazon.jobs/en/jobs/2700123/software-development-engineer-payments"
+    )
+    assert first.posted_at is not None and first.posted_at.year == 2026
+    assert postings[1].employment_type is EmploymentType.INTERNSHIP
+
+
+def test_netflix_parses():
+    scraper = NetflixScraper(_client(_load("netflix.json"), expect_url_contains="location=India"))
+    postings = scraper.scrape("https://explore.jobs.netflix.net")
+
+    assert len(postings) == 1
+    assert postings[0].external_id == "JR42140"
+    assert postings[0].location == "Mumbai,India"
+    assert postings[0].apply_url.endswith("/careers/job/790317836990")
+    assert postings[0].posted_at is not None
+
+
 def test_http_error_becomes_scraper_error():
     scraper = GreenhouseScraper(_client({"error": "not found"}, status=404))
     with pytest.raises(ScraperError):
@@ -119,6 +154,8 @@ def test_registry_maps_parser_types():
     assert get_scraper_class(ParserType.LEVER) is LeverScraper
     assert get_scraper_class(ParserType.WORKDAY) is WorkdayScraper
     assert get_scraper_class(ParserType.SMARTRECRUITERS) is SmartRecruitersScraper
+    assert get_scraper_class(ParserType.AMAZON) is AmazonScraper
+    assert get_scraper_class(ParserType.NETFLIX) is NetflixScraper
     with pytest.raises(ScraperError):
         get_scraper_class(ParserType.CUSTOM)
 

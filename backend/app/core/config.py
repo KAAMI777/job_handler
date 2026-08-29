@@ -30,6 +30,13 @@ class Settings(BaseSettings):
     cors_origins: list[str] = ["http://localhost:5173"]
     cors_origin_regex: str | None = r"https://job-handler-.*\.vercel\.app"
 
+    # Email digest of newly found relevant jobs after each scrape run.
+    # All three must be set for mail to send; otherwise it is silently skipped.
+    resend_api_key: str | None = None
+    notify_email: str | None = None  # recipient(s), comma-separated
+    notify_from_email: str = "onboarding@resend.dev"  # Resend's no-domain test sender
+    notify_min_score: int = 0
+
     @field_validator("cors_origins", mode="before")
     @classmethod
     def _split_cors_origins(cls, value: object) -> object:

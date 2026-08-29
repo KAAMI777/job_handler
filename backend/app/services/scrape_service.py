@@ -22,7 +22,7 @@ from app.models.company import Company
 from app.models.enums import RunStatus, RunType
 from app.models.scrape_run import ScrapeRun
 from app.scrapers import ScraperError, get_scraper_class
-from app.services import job_service
+from app.services import job_service, notify_service
 from app.services.matcher import RuleMap, evaluate, load_rules
 
 logger = logging.getLogger(__name__)
@@ -170,6 +170,11 @@ def _execute(db: Session, run_id: int) -> None:
         failed,
         run.duration_seconds,
     )
+
+    try:
+        notify_service.send_new_jobs_digest(db, run)
+    except Exception:  # noqa: BLE001 - notifications must never fail a run
+        logger.exception("Email digest raised for run %s", run_id)
 
 
 def _scrape_company(db: Session, company: Company, rules: RuleMap) -> int:

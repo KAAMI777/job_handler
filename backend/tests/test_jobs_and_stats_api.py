@@ -65,6 +65,24 @@ def test_jobs_list_pagination(api_client, db_session):
     assert page["items"][0]["title"] == "Frontend Engineer"
 
 
+def test_jobs_list_within_hours(api_client, db_session):
+    from datetime import UTC, datetime, timedelta
+
+    from sqlalchemy import select
+
+    from app.models.job import Job
+
+    _seed(db_session)
+    # Age one relevant job past the window.
+    old = db_session.scalar(select(Job).where(Job.title == "Frontend Engineer"))
+    old.first_seen_at = datetime.now(UTC) - timedelta(hours=72)
+    db_session.flush()
+
+    body = api_client.get("/api/v1/jobs", params={"within_hours": 48}).json()
+    assert body["total"] == 1
+    assert body["items"][0]["title"] == "Backend Engineer"
+
+
 def test_stats(api_client, db_session):
     _seed(db_session)
     stats = api_client.get("/api/v1/stats").json()
@@ -73,3 +91,5 @@ def test_stats(api_client, db_session):
     assert stats["total_relevant_jobs"] == 2
     assert stats["jobs_today"] == 3
     assert stats["new_relevant_jobs_today"] == 2
+    assert stats["jobs_this_week"] == 2
+    assert stats["high_score_jobs"] == 1  # only the score-80 job clears the 40 threshold

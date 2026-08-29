@@ -114,3 +114,10 @@ def test_missing_company_is_404(api_client):
     assert api_client.get("/api/v1/companies/999").status_code == 404
     assert api_client.patch("/api/v1/companies/999", json={"name": "x"}).status_code == 404
     assert api_client.post("/api/v1/companies/999/disable").status_code == 404
+    assert api_client.delete("/api/v1/companies/999").status_code == 404
+
+
+def test_delete_company_removes_it(api_client):
+    created = api_client.post("/api/v1/companies", json=VALID).json()
+    assert api_client.delete(f"/api/v1/companies/{created['id']}").status_code == 204
+    assert api_client.get(f"/api/v1/companies/{created['id']}").status_code == 404

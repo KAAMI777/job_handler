@@ -17,6 +17,7 @@ from app.core.config import get_settings
 from app.models.company import Company
 from app.models.job import Job
 from app.models.scrape_run import ScrapeRun
+from app.services import settings_service
 
 logger = logging.getLogger(__name__)
 
@@ -26,13 +27,13 @@ _EMAIL_DESC_LEN = 280
 
 def new_relevant_jobs(db: Session, run: ScrapeRun) -> list[tuple[str, Job]]:
     """(company_name, job) for relevant jobs first seen during this run."""
-    settings = get_settings()
+    min_score = settings_service.get_effective(db).notify_min_score
     stmt = (
         select(Company.name, Job)
         .join(Company, Company.id == Job.company_id)
         .where(
             Job.is_relevant.is_(True),
-            Job.score >= settings.notify_min_score,
+            Job.score >= min_score,
             Job.first_seen_at >= run.started_at,
         )
         .order_by(Company.name, Job.score.desc(), Job.title)
@@ -42,8 +43,9 @@ def new_relevant_jobs(db: Session, run: ScrapeRun) -> list[tuple[str, Job]]:
 
 def send_new_jobs_digest(db: Session, run: ScrapeRun) -> bool:
     """Build and send the digest for ``run``. Returns True only if an email was sent."""
-    settings = get_settings()
-    if not settings.resend_api_key or not settings.notify_email:
+    env = get_settings()
+    effective = settings_service.get_effective(db)
+    if not env.resend_api_key or not effective.notify_email:
         logger.debug("Email digest skipped: RESEND_API_KEY / NOTIFY_EMAIL not set")
         return False
 
@@ -58,8 +60,8 @@ def send_new_jobs_digest(db: Session, run: ScrapeRun) -> bool:
 
     subject = f"{len(rows)} new software job(s) — Job Agent"
     payload = {
-        "from": settings.notify_from_email,
-        "to": [e.strip() for e in settings.notify_email.split(",") if e.strip()],
+        "from": env.notify_from_email,
+        "to": [e.strip() for e in effective.notify_email.split(",") if e.strip()],
         "subject": subject,
         "text": _text_body(by_company),
         "html": _html_body(by_company),
@@ -68,7 +70,7 @@ def send_new_jobs_digest(db: Session, run: ScrapeRun) -> bool:
     try:
         response = httpx.post(
             RESEND_ENDPOINT,
-            headers={"Authorization": f"Bearer {settings.resend_api_key}"},
+            headers={"Authorization": f"Bearer {env.resend_api_key}"},
             json=payload,
             timeout=15.0,
         )

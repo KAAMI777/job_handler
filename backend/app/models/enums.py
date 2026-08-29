@@ -40,3 +40,10 @@ class RunStatus(StrEnum):
     SUCCESS = "success"
     PARTIAL = "partial"
     FAILED = "failed"
+
+
+class SavedStatus(StrEnum):
+    """Where a job sits in the user's personal tracker."""
+
+    SAVED = "saved"
+    APPLIED = "applied"

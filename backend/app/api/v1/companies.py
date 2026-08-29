@@ -84,3 +84,10 @@ def enable_company(company_id: int, db: DbSession) -> CompanyRead:
     if company is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Company not found")
     return company
+
+
+@router.delete("/{company_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_company(company_id: int, db: DbSession) -> None:
+    """Permanently remove a company and all of its jobs."""
+    if not company_service.delete_company(db, company_id):
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Company not found")

@@ -18,3 +18,14 @@ venv/
 # Node
 node_modules/
 dist/
+
+# Agent-skill tooling (installed locally, not part of the product)
+.agents/
+.claude/
+.codex/
+.github/skills/
+.github/agents/
+.github/hooks/
+/package.json
+/package-lock.json
+/skills-lock.json

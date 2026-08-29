@@ -84,6 +84,7 @@ def list_jobs(
     role: str | None = None,
     is_relevant: bool | None = True,
     is_active: bool | None = True,
+    first_seen_after: datetime | None = None,
     limit: int = 50,
     offset: int = 0,
 ) -> tuple[list[Job], int]:
@@ -99,6 +100,8 @@ def list_jobs(
         filters.append(Job.is_relevant.is_(is_relevant))
     if is_active is not None:
         filters.append(Job.is_active.is_(is_active))
+    if first_seen_after is not None:
+        filters.append(Job.first_seen_at >= first_seen_after)
 
     total = db.scalar(select(func.count()).select_from(Job).where(*filters)) or 0
     stmt = (

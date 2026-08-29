@@ -4,8 +4,9 @@ import httpx
 
 from app.models.company import Company
 from app.models.enums import ParserType, RunType
+from app.schemas.settings import SettingsRead
 from app.scrapers.types import JobPosting
-from app.services import job_service, notify_service
+from app.services import job_service, notify_service, settings_service
 from app.services.matcher import MatchResult
 from app.services.scrape_service import create_run
 from tests.conftest import requires_db
@@ -14,11 +15,22 @@ pytestmark = requires_db
 
 
 @dataclass
-class _FakeSettings:
+class _FakeEnv:
     resend_api_key: str | None = "re_test"
-    notify_email: str | None = "me@example.com"
     notify_from_email: str = "onboarding@resend.dev"
-    notify_min_score: int = 0
+
+
+def _configure(
+    monkeypatch, *, resend_api_key="re_test", notify_email="me@example.com", min_score=0
+):
+    monkeypatch.setattr(
+        notify_service, "get_settings", lambda: _FakeEnv(resend_api_key=resend_api_key)
+    )
+    monkeypatch.setattr(
+        settings_service,
+        "get_effective",
+        lambda db: SettingsRead(notify_min_score=min_score, notify_email=notify_email),
+    )
 
 
 def _seed_relevant_job(db, *, title="Backend Engineer", company_name="Acme"):
@@ -38,19 +50,21 @@ def _seed_relevant_job(db, *, title="Backend Engineer", company_name="Acme"):
         description="<p>Great role</p>",
     )
     job_service.upsert_job(
-        db, company, posting,
+        db,
+        company,
+        posting,
         MatchResult(is_relevant=True, score=60, matched_roles=["backend"], country="India"),
     )
 
 
 def test_skips_when_not_configured(db_session, monkeypatch):
-    monkeypatch.setattr(notify_service, "get_settings", lambda: _FakeSettings(resend_api_key=None))
+    _configure(monkeypatch, resend_api_key=None)
     run = create_run(db_session, RunType.SCHEDULED)
     assert notify_service.send_new_jobs_digest(db_session, run) is False
 
 
 def test_skips_when_no_new_relevant_jobs(db_session, monkeypatch):
-    monkeypatch.setattr(notify_service, "get_settings", lambda: _FakeSettings())
+    _configure(monkeypatch)
     run = create_run(db_session, RunType.SCHEDULED)
     assert notify_service.send_new_jobs_digest(db_session, run) is False
 
@@ -60,7 +74,7 @@ def test_sends_grouped_digest(db_session, monkeypatch):
     _seed_relevant_job(db_session, title="Senior Backend Engineer", company_name="Acme")
     _seed_relevant_job(db_session, title="Platform Engineer", company_name="Beta")
 
-    monkeypatch.setattr(notify_service, "get_settings", lambda: _FakeSettings())
+    _configure(monkeypatch)
     sent = {}
 
     def fake_post(url, headers, json, timeout):
@@ -84,7 +98,7 @@ def test_sends_grouped_digest(db_session, monkeypatch):
 def test_http_error_does_not_raise(db_session, monkeypatch):
     run = create_run(db_session, RunType.SCHEDULED)
     _seed_relevant_job(db_session)
-    monkeypatch.setattr(notify_service, "get_settings", lambda: _FakeSettings())
+    _configure(monkeypatch)
 
     def boom(*a, **k):
         raise httpx.ConnectError("nope")

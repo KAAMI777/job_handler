@@ -105,3 +105,13 @@ def set_active(db: Session, company_id: int, *, active: bool) -> Company | None:
     db.commit()
     db.refresh(company)
     return company
+
+
+def delete_company(db: Session, company_id: int) -> bool:
+    """Remove a company and (via ON DELETE CASCADE) all its jobs. Returns True if it existed."""
+    company = db.get(Company, company_id)
+    if company is None:
+        return False
+    db.delete(company)
+    db.commit()
+    return True

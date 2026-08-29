@@ -19,16 +19,17 @@ def start_scrape_run(
 
     409 if a run is already in progress (its id is in the response detail).
     """
-    scrape_service.reap_stale_runs(db)
-
-    in_progress = scrape_service.active_run(db)
-    if in_progress is not None:
+    run = scrape_service.start_run(db, payload.run_type)
+    if run is None:
+        in_progress = scrape_service.active_run(db)
         raise HTTPException(
             status.HTTP_409_CONFLICT,
-            detail={"message": "A scrape run is already in progress", "run_id": in_progress.id},
+            detail={
+                "message": "A scrape run is already in progress",
+                "run_id": in_progress.id if in_progress else None,
+            },
         )
 
-    run = scrape_service.create_run(db, payload.run_type)
     background_tasks.add_task(scrape_service.execute_run, run.id)
     return ScrapeRunAccepted(run_id=run.id, status=run.status)
 

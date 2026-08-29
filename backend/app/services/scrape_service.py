@@ -1,7 +1,11 @@
 """Orchestrates a full scrape: every active company -> postings -> matched jobs.
 
-Runs in a FastAPI ``BackgroundTask`` (own DB session, not request-scoped). One run
-executes at a time; the API layer enforces that before scheduling work here.
+Two callers:
+- the API (``POST /scrape/run``) schedules :func:`execute_run` as a background task;
+- the standalone runner (``python -m app.scrape_runner``, for a Render Cron Job) calls
+  :func:`run_scrape_now`, which blocks until the run finishes.
+
+Both go through :func:`start_run`, so only one run is ever in flight.
 """
 
 from __future__ import annotations
@@ -23,7 +27,9 @@ from app.services.matcher import RuleMap, evaluate, load_rules
 
 logger = logging.getLogger(__name__)
 
-STALE_RUN_AFTER = timedelta(minutes=30)
+# Large batches (many Workday/enterprise companies) can legitimately run long, so this
+# is generous. Runs still stuck after this are treated as crashed.
+STALE_RUN_AFTER = timedelta(hours=3)
 
 
 def _now() -> datetime:
@@ -63,6 +69,42 @@ def create_run(db: Session, run_type: RunType) -> ScrapeRun:
     db.commit()
     db.refresh(run)
     return run
+
+
+def start_run(db: Session, run_type: RunType) -> ScrapeRun | None:
+    """Reap stale runs, then create a new one unless another is already running.
+
+    Returns the new run, or ``None`` if a run is already in progress.
+    """
+    reap_stale_runs(db)
+    if active_run(db) is not None:
+        return None
+    return create_run(db, run_type)
+
+
+def run_scrape_now(run_type: RunType = RunType.SCHEDULED) -> ScrapeRun | None:
+    """Start and fully execute a run in the current process (blocking).
+
+    Used by the standalone runner. Returns the finished run, or ``None`` if one was
+    already in progress.
+    """
+    db = SessionLocal()
+    try:
+        run = start_run(db, run_type)
+    finally:
+        db.close()
+
+    if run is None:
+        logger.info("Scrape skipped: a run is already in progress")
+        return None
+
+    execute_run(run.id)
+
+    db = SessionLocal()
+    try:
+        return db.get(ScrapeRun, run.id)
+    finally:
+        db.close()
 
 
 def execute_run(run_id: int) -> None:

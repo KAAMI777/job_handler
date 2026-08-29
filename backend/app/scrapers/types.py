@@ -1,8 +1,9 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 from app.models.enums import EmploymentType
+from app.utils.text import clean_description
 
 
 class JobPosting(BaseModel):
@@ -20,3 +21,9 @@ class JobPosting(BaseModel):
     apply_url: str
     description: str | None = None
     posted_at: datetime | None = None
+
+    @field_validator("description", mode="after")
+    @classmethod
+    def _trim_description(cls, value: str | None) -> str | None:
+        # Keep only a short plain-text preview (bounds DB rows and peak memory).
+        return clean_description(value)

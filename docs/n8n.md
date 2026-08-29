@@ -2,6 +2,10 @@
 
 n8n only *triggers* scrapes. All scraping, matching and storage lives in the backend.
 
+> **You may not need this.** The recommended setup schedules scraping with a Render
+> Cron Job (`docs/deployment.md`), which needs no n8n. Use this doc only if you want
+> n8n to own the schedule instead, or for ad-hoc triggering.
+
 ## Workflow
 
 1. **Schedule Trigger** — e.g. every 6 hours.
@@ -24,4 +28,4 @@ n8n only *triggers* scrapes. All scraping, matching and storage lives in the bac
 - The endpoint is currently unauthenticated (auth is a later milestone). Keep the
   API host out of public docs and restrict by network if the platform allows.
 - One run executes at a time. Runs left stuck by a crashed worker are auto-failed
-  after 30 minutes so the next trigger can proceed.
+  after 3 hours so the next trigger can proceed.

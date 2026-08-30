@@ -4,11 +4,11 @@ import httpx
 
 from app.models.company import Company
 from app.models.enums import ParserType, RunType
-from app.schemas.settings import SettingsRead
 from app.scrapers.types import JobPosting
 from app.services import job_service, notify_service, settings_service
 from app.services.matcher import MatchResult
 from app.services.scrape_service import create_run
+from app.services.settings_service import Recipient
 from tests.conftest import requires_db
 
 pytestmark = requires_db
@@ -21,16 +21,14 @@ class _FakeEnv:
 
 
 def _configure(
-    monkeypatch, *, resend_api_key="re_test", notify_email="me@example.com", min_score=0
+    monkeypatch, *, resend_api_key="re_test", recipients=None, min_score=0
 ):
     monkeypatch.setattr(
         notify_service, "get_settings", lambda: _FakeEnv(resend_api_key=resend_api_key)
     )
-    monkeypatch.setattr(
-        settings_service,
-        "get_effective",
-        lambda db: SettingsRead(notify_min_score=min_score, notify_email=notify_email),
-    )
+    if recipients is None:
+        recipients = [Recipient(email="me@example.com", min_score=min_score)]
+    monkeypatch.setattr(settings_service, "digest_recipients", lambda db: recipients)
 
 
 def _seed_relevant_job(db, *, title="Backend Engineer", company_name="Acme"):
@@ -93,6 +91,29 @@ def test_sends_grouped_digest(db_session, monkeypatch):
     assert "Senior Backend Engineer" in body["text"]
     assert "[backend]" in body["text"]
     assert "https://example.com/apply/1" in body["text"]
+
+
+def test_each_recipient_filtered_by_their_own_min_score(db_session, monkeypatch):
+    run = create_run(db_session, RunType.SCHEDULED)
+    _seed_relevant_job(db_session, title="Backend Engineer", company_name="Acme")  # score 60
+
+    _configure(
+        monkeypatch,
+        recipients=[
+            Recipient(email="all@example.com", min_score=0),
+            Recipient(email="picky@example.com", min_score=80),
+        ],
+    )
+    sent_to = []
+    monkeypatch.setattr(
+        notify_service.httpx,
+        "post",
+        lambda url, headers, json, timeout: sent_to.append(json["to"][0])
+        or httpx.Response(200, json={"id": "x"}, request=httpx.Request("POST", url)),
+    )
+
+    assert notify_service.send_new_jobs_digest(db_session, run) is True
+    assert sent_to == ["all@example.com"]
 
 
 def test_http_error_does_not_raise(db_session, monkeypatch):

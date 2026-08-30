@@ -5,5 +5,14 @@ from app.models.job import Job
 from app.models.keyword_rule import KeywordRule
 from app.models.saved_job import SavedJob
 from app.models.scrape_run import ScrapeRun
+from app.models.user_settings import UserSettings
 
-__all__ = ["AppSettings", "Company", "Job", "KeywordRule", "SavedJob", "ScrapeRun"]
+__all__ = [
+    "AppSettings",
+    "Company",
+    "Job",
+    "KeywordRule",
+    "SavedJob",
+    "ScrapeRun",
+    "UserSettings",
+]

@@ -53,19 +53,20 @@ Use **either** the Render Cron Job **or** GitHub Actions — not both.
 
 ## Email digest (optional)
 
-After each run the backend can email a digest of the *new* relevant jobs it found, grouped
-by company. Set these on the **web service and the scrape runner** (whichever executes the
-run):
+After each run the backend emails a digest of the *new* relevant jobs it found, grouped by
+company. **Each signed-in user is an independent recipient**: the digest goes to their
+account email, filtered by their own minimum score, and they toggle it on/off in the
+profile page (`user_settings` table). Set these on whichever service executes the run (the
+**web service** when you schedule with GitHub Actions):
 
 | Var | Meaning |
 |---|---|
-| `RESEND_API_KEY` | from resend.com (free tier: 3,000/mo) |
-| `NOTIFY_EMAIL` | recipient(s), comma-separated |
-| `NOTIFY_FROM_EMAIL` | `onboarding@resend.dev` works with no domain but only sends to your own Resend account email; use a sender on a verified domain otherwise |
-| `NOTIFY_MIN_SCORE` | only include jobs at/above this score (default `0`) |
+| `RESEND_API_KEY` | from resend.com (free tier: 3,000/mo) — required for any mail |
+| `NOTIFY_FROM_EMAIL` | `onboarding@resend.dev` sends **only to your own Resend account email**. To reach other users, verify a domain in Resend and use a sender on it (`jobs@yourdomain.com`). |
+| `NOTIFY_EMAIL` | fallback recipient(s), comma-separated — used only when auth is off or nobody has signed in |
+| `NOTIFY_MIN_SCORE` | default minimum score for users who haven't picked one (default `0`) |
 
-Leave `RESEND_API_KEY` / `NOTIFY_EMAIL` unset to disable it. If you schedule with GitHub
-Actions, set these on the **web service** (that's where the background run executes).
+Leave `RESEND_API_KEY` unset to disable email entirely.
 
 ## Migrations
 

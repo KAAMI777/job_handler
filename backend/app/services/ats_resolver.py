@@ -65,6 +65,10 @@ _WORKDAY = re.compile(
 )
 _AMAZON = re.compile(r"amazon\.jobs", re.I)
 _NETFLIX = re.compile(r"explore\.jobs\.netflix\.net|jobs\.netflix\.com", re.I)
+_MICROSOFT = re.compile(r"careers\.microsoft\.com|jobs\.careers\.microsoft\.com", re.I)
+_ORACLE = re.compile(
+    r"https?://([a-z0-9-]+\.fa\.oraclecloud\.com/[^\s\"'<>]*?/sites/[A-Za-z0-9_-]+)", re.I
+)
 
 
 @dataclass
@@ -78,6 +82,12 @@ def _match(text: str) -> ResolvedAts | None:
         return ResolvedAts(ParserType.AMAZON, "https://www.amazon.jobs")
     if _NETFLIX.search(text):
         return ResolvedAts(ParserType.NETFLIX, "https://explore.jobs.netflix.net")
+    if _MICROSOFT.search(text):
+        return ResolvedAts(ParserType.MICROSOFT, "https://careers.microsoft.com")
+
+    oracle = _ORACLE.search(text)
+    if oracle:
+        return ResolvedAts(ParserType.ORACLE, f"https://{oracle.group(1).split('?')[0]}")
 
     workday = _WORKDAY.search(text)
     if workday:

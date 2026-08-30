@@ -1,0 +1,26 @@
+{
+  "items": [
+    {
+      "TotalJobsCount": 2,
+      "requisitionList": [
+        {
+          "Id": "210775811",
+          "Title": "Senior Software Engineer, Payments",
+          "PrimaryLocation": "Bengaluru, KA, India",
+          "PrimaryLocationCountry": "IN",
+          "PostedDate": "2026-08-20",
+          "JobType": "Regular",
+          "ShortDescriptionStr": "Build payment systems at scale."
+        },
+        {
+          "Id": "210775812",
+          "Title": "VP, Risk Analytics",
+          "PrimaryLocation": "New York, NY, United States",
+          "PostedDate": "2026-08-21",
+          "JobType": "Regular",
+          "ShortDescriptionStr": "Own the risk models."
+        }
+      ]
+    }
+  ]
+}

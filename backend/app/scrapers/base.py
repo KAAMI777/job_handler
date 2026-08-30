@@ -65,6 +65,25 @@ class BaseScraper(ABC):
         """POST ``json`` to ``url`` and return parsed JSON, retrying transient failures."""
         return self._request_json("POST", url, json=json)
 
+    def _get_text(self, url: str) -> str:
+        """GET ``url`` and return the response body as text, retrying transient failures."""
+
+        @retry(
+            reraise=True,
+            stop=stop_after_attempt(self._retries + 1),
+            wait=wait_exponential(multiplier=0.5, max=8),
+            retry=retry_if_exception(_is_transient),
+        )
+        def _do_request() -> str:
+            response = self._client.get(url)
+            response.raise_for_status()
+            return response.text
+
+        try:
+            return _do_request()
+        except httpx.HTTPError as exc:
+            raise ScraperError(f"{self.source}: request to {url} failed: {exc}") from exc
+
     def _request_json(self, method: str, url: str, *, json: Any = None) -> Any:
         @retry(
             reraise=True,

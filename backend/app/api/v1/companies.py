@@ -18,8 +18,8 @@ router = APIRouter(prefix="/companies", tags=["companies"])
 _CONFLICT = "A company with this career_url already exists"
 _NOT_DETECTED = (
     "Could not detect the ATS from that URL. Pass parser_type explicitly "
-    "(greenhouse, lever, ashby, workday, smartrecruiters, amazon, netflix) "
-    "with the ATS board URL."
+    "(greenhouse, lever, ashby, workday, smartrecruiters, oracle, amazon, netflix, "
+    "microsoft, or custom for a page with schema.org JobPosting data) with the board URL."
 )
 
 

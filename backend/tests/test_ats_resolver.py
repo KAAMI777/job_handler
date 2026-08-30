@@ -46,6 +46,23 @@ def test_detects_amazon():
     assert r is not None and r.parser_type is ParserType.AMAZON
 
 
+def test_detects_microsoft():
+    r = resolve("https://careers.microsoft.com/v2/global/en/home.html")
+    assert r is not None and r.parser_type is ParserType.MICROSOFT
+
+
+def test_detects_oracle_hcm_from_markup():
+    html = (
+        '<a href="https://jpmc.fa.oraclecloud.com/hcmUI/CandidateExperience/en/'
+        'sites/CX_1001/requisitions">Search jobs</a>'
+    )
+    r = resolve("https://careers.jpmorgan.com", client=_client(html))
+    assert r is not None and r.parser_type is ParserType.ORACLE
+    assert r.career_url == (
+        "https://jpmc.fa.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001"
+    )
+
+
 def test_follows_redirect_to_ats():
     r = resolve(
         "https://careers.acme.com",

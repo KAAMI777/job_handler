@@ -10,9 +10,12 @@ from app.scrapers.amazon import AmazonScraper
 from app.scrapers.ashby import AshbyScraper
 from app.scrapers.base import BaseScraper
 from app.scrapers.greenhouse import GreenhouseScraper
+from app.scrapers.jsonld import JsonLdScraper
 from app.scrapers.lever import LeverScraper
+from app.scrapers.microsoft import MicrosoftScraper
 from app.scrapers.netflix import NetflixScraper
 from app.scrapers.normalize import normalize_employment_type
+from app.scrapers.oracle import OracleScraper
 from app.scrapers.smartrecruiters import SmartRecruitersScraper
 from app.scrapers.workday import WorkdayScraper
 
@@ -138,6 +141,68 @@ def test_netflix_parses():
     assert postings[0].posted_at is not None
 
 
+def test_oracle_hcm_parses_and_builds_apply_url():
+    scraper = OracleScraper(
+        _client(_load("oracle.json"), expect_url_contains="recruitingCEJobRequisitions")
+    )
+    url = "https://jpmc.fa.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions"
+    postings = scraper.scrape(url)
+
+    assert [p.title for p in postings] == [
+        "Senior Software Engineer, Payments",
+        "VP, Risk Analytics",
+    ]
+    first = postings[0]
+    assert first.source == "oracle"
+    assert first.external_id == "210775811"
+    assert first.location == "Bengaluru, KA, India"
+    assert first.apply_url == (
+        "https://jpmc.fa.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/job/210775811"
+    )
+
+
+def test_oracle_rejects_non_oracle_url():
+    with pytest.raises(ScraperError):
+        OracleScraper(_client({})).scrape("https://boards.greenhouse.io/acme")
+
+
+def test_microsoft_parses():
+    scraper = MicrosoftScraper(_client(_load("microsoft.json"), expect_url_contains="lc=India"))
+    postings = scraper.scrape("https://careers.microsoft.com")
+
+    assert len(postings) == 1
+    assert postings[0].external_id == "1812345"
+    assert postings[0].location == "Hyderabad, Telangana, India"
+    assert postings[0].employment_type is EmploymentType.FULL_TIME
+    assert postings[0].apply_url.endswith("/job/1812345")
+
+
+def _html_client(html: str):
+    return httpx.Client(
+        transport=httpx.MockTransport(lambda req: httpx.Response(200, text=html))
+    )
+
+
+def test_jsonld_scraper_extracts_job_postings():
+    html = (FIXTURES / "jsonld.html").read_text()
+    postings = JsonLdScraper(_html_client(html)).scrape("https://acme.example/careers")
+
+    assert len(postings) == 1
+    job = postings[0]
+    assert job.title == "Backend Engineer"
+    assert job.location == "Bengaluru, KA, IN"
+    assert job.employment_type is EmploymentType.FULL_TIME
+    assert job.apply_url == "https://acme.example/jobs/backend-engineer"
+    assert "<" not in (job.description or "")
+
+
+def test_jsonld_scraper_raises_when_no_data():
+    with pytest.raises(ScraperError):
+        JsonLdScraper(_html_client("<html><body>nothing here</body></html>")).scrape(
+            "https://x.example/careers"
+        )
+
+
 def test_http_error_becomes_scraper_error():
     scraper = GreenhouseScraper(_client({"error": "not found"}, status=404))
     with pytest.raises(ScraperError):
@@ -156,8 +221,9 @@ def test_registry_maps_parser_types():
     assert get_scraper_class(ParserType.SMARTRECRUITERS) is SmartRecruitersScraper
     assert get_scraper_class(ParserType.AMAZON) is AmazonScraper
     assert get_scraper_class(ParserType.NETFLIX) is NetflixScraper
-    with pytest.raises(ScraperError):
-        get_scraper_class(ParserType.CUSTOM)
+    assert get_scraper_class(ParserType.ORACLE) is OracleScraper
+    assert get_scraper_class(ParserType.MICROSOFT) is MicrosoftScraper
+    assert get_scraper_class(ParserType.CUSTOM) is JsonLdScraper
 
 
 @pytest.mark.parametrize(

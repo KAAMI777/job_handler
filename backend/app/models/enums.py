@@ -17,8 +17,10 @@ class ParserType(StrEnum):
     ASHBY = "ashby"
     WORKDAY = "workday"
     SMARTRECRUITERS = "smartrecruiters"
+    ORACLE = "oracle"
     AMAZON = "amazon"
     NETFLIX = "netflix"
+    MICROSOFT = "microsoft"
     CUSTOM = "custom"
 
 

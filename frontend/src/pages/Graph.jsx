@@ -1,6 +1,6 @@
 import { ReactFlowProvider } from "@xyflow/react";
 import { motion } from "framer-motion";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
 import CompanyRolesPanel from "@/components/graph/CompanyRolesPanel.jsx";
@@ -10,7 +10,8 @@ import CommandLine from "@/components/terminal/CommandLine.jsx";
 import Button from "@/components/ui/Button.jsx";
 import EmptyState from "@/components/ui/EmptyState.jsx";
 import { useCompanies, useJobs } from "@/hooks/queries";
-import { hoursAgo, JOB_VISIBILITY_HOURS } from "@/lib/time";
+import { JOB_VISIBILITY_HOURS, hoursAgo } from "@/lib/time";
+import { createTour, maybeStartTour } from "@/lib/tour";
 
 const PULSE_HOURS = 8;
 
@@ -39,6 +40,14 @@ export default function Graph() {
 
   const loading = companiesQ.isLoading;
   const empty = !loading && companies.length === 0;
+  const hasNodes = !loading && !empty;
+
+  // First-visit guided tour, once the graph actually has nodes to point at.
+  useEffect(() => {
+    if (!hasNodes) return;
+    const t = setTimeout(maybeStartTour, 1200);
+    return () => clearTimeout(t);
+  }, [hasNodes]);
 
   return (
     <motion.div
@@ -72,13 +81,18 @@ export default function Graph() {
       {!loading && !empty && (
         <>
           <div className={styles.toolbar}>
-            <span className={styles.status}>
+            <span className={styles.status} data-tour="status">
               <span className={styles.statusPrompt}>$</span>
               {companies.length} companies · {jobsQ.data?.total ?? 0} roles in {JOB_VISIBILITY_HOURS}h
             </span>
-            <Button size="sm" onClick={() => resetRef.current?.reset()}>
-              reset layout
-            </Button>
+            <div className={styles.toolbarBtns}>
+              <Button size="sm" onClick={() => resetRef.current?.reset()}>
+                reset layout
+              </Button>
+              <Button size="sm" onClick={() => createTour().drive()}>
+                tour
+              </Button>
+            </div>
           </div>
 
           <ReactFlowProvider>

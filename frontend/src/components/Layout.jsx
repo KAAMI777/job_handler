@@ -28,7 +28,11 @@ export default function Layout({ transparentBar = false }) {
           <NavLink to="/graph" className={({ isActive }) => (isActive ? styles.active : "")}>
             graph
           </NavLink>
-          <NavLink to="/profile" className={({ isActive }) => (isActive ? styles.active : "")}>
+          <NavLink
+            to="/profile"
+            data-tour="profile-link"
+            className={({ isActive }) => (isActive ? styles.active : "")}
+          >
             profile
           </NavLink>
         </nav>

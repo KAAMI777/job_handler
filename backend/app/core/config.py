@@ -26,9 +26,13 @@ class Settings(BaseSettings):
         "Render hand them out) are rewritten to use the psycopg (v3) driver.",
     )
 
-    # Comma-separated in the environment, e.g. "http://localhost:5173,https://app.example.com".
+    # Exact allowed origins — comma-separated in the environment, e.g.
+    # "http://localhost:5173,https://app.example.com". Set CORS_ORIGINS to your Vercel
+    # production URL (and any custom domain).
     cors_origins: list[str] = ["http://localhost:5173"]
-    cors_origin_regex: str | None = r"https://job-handler-.*\.vercel\.app"
+    # Also allow every *.vercel.app host so production and preview deploys work without
+    # re-listing each URL. Starlette matches this with re.fullmatch.
+    cors_origin_regex: str | None = r"https://([a-z0-9-]+\.)*vercel\.app"
 
     # Authentication. When ``auth_enabled`` is False (the default) every API route is open,
     # matching the app's single-user origins. Flip it to True once the frontend signs users

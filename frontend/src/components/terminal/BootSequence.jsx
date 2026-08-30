@@ -27,7 +27,7 @@ export default function BootSequence({ onDone }) {
       initial={reduce ? false : "hidden"}
       animate="show"
       onAnimationComplete={onDone}
-      variants={{ show: { transition: { staggerChildren: reduce ? 0 : 0.42 } } }}
+      variants={{ show: { transition: { staggerChildren: reduce ? 0 : 0.16 } } }}
     >
       {LINES.map((line, i) => (
         <motion.p

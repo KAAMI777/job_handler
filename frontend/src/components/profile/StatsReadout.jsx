@@ -1,27 +1,25 @@
-import Skeleton from "@/components/ui/Skeleton.jsx";
 import { useStats } from "@/hooks/queries";
 
 import styles from "./profile.module.css";
 
-const CELLS = [
-  { key: "jobs_this_week", label: "relevant roles / 7d" },
-  { key: "high_score_jobs", label: "high-score open" },
-  { key: "total_relevant_jobs", label: "relevant open" },
-  { key: "active_companies", label: "companies active" },
+const PARTS = [
+  { key: "jobs_this_week", label: "roles/7d" },
+  { key: "high_score_jobs", label: "high-score" },
+  { key: "total_relevant_jobs", label: "open" },
+  { key: "active_companies", label: "companies" },
 ];
 
 export default function StatsReadout() {
-  const { data, isLoading } = useStats();
+  const { data } = useStats();
   return (
-    <div className={styles.readout} role="list">
-      {CELLS.map((c) => (
-        <div key={c.key} className={styles.cell} role="listitem">
-          <span className={styles.cellNum} data-numeric>
-            {isLoading ? <Skeleton w="2ch" h="1.2em" /> : (data?.[c.key] ?? 0)}
-          </span>
-          <span className={styles.cellLabel}>{c.label}</span>
-        </div>
+    <code className={styles.readout} aria-label="summary">
+      <span className={styles.readoutDollar}>$</span> stat
+      {PARTS.map((p) => (
+        <span key={p.key} className={styles.readoutPart}>
+          {" "}
+          --{p.label}=<b data-numeric>{data?.[p.key] ?? "…"}</b>
+        </span>
       ))}
-    </div>
+    </code>
   );
 }

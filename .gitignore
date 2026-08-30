@@ -26,6 +26,7 @@ dist/
 .github/skills/
 .github/agents/
 .github/hooks/
+.impeccable/
 /package.json
 /package-lock.json
 /skills-lock.json

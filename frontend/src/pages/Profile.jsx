@@ -28,26 +28,26 @@ export default function Profile() {
       </header>
 
       <div className={styles.grid}>
-        <div className={styles.colMain}>
-          <Panel title="tracked companies" hint="watchlist">
+        <div className={styles.col}>
+          <Panel title="tracked companies">
             <CompaniesPanel />
           </Panel>
-          <Panel title="tag preferences" hint="matcher">
-            <KeywordRulesPanel />
+          <Panel title="field">
+            <FieldSelector />
           </Panel>
-          <Panel title="saved & applied" hint="tracker">
+          <Panel title="saved & applied">
             <SavedJobsPanel />
           </Panel>
         </div>
 
-        <div className={styles.colSide}>
-          <Panel title="field" hint="scope">
-            <FieldSelector />
+        <div className={styles.col}>
+          <Panel title="tag preferences">
+            <KeywordRulesPanel />
           </Panel>
-          <Panel title="agent runs" hint="scheduler">
+          <Panel title="agent runs">
             <RunLogPanel />
           </Panel>
-          <Panel title="notifications" hint="digest">
+          <Panel title="notifications">
             <NotifyPanel />
           </Panel>
         </div>

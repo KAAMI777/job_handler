@@ -18,31 +18,23 @@
   margin: var(--sp-1) 0;
 }
 
-/* ---- stats readout ---- */
+/* ---- stats readout (a shell command, not metric cards) ---- */
 .readout {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sp-3);
-}
-.cell {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: var(--sp-2) var(--sp-3);
+  display: inline-block;
+  padding: var(--sp-3) var(--sp-4);
   background: var(--surface-1);
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
-  min-width: 92px;
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+  line-height: 1.9;
 }
-.cellNum {
-  font-size: var(--fs-md);
+.readoutDollar {
+  color: var(--accent-dim);
+}
+.readoutPart b {
   color: var(--accent-bright);
-}
-.cellLabel {
-  font-size: var(--fs-2xs);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-  color: var(--text-dim);
+  font-weight: 600;
 }
 
 /* ---- add-company form ---- */
@@ -328,5 +320,15 @@
   .runItem {
     grid-template-columns: 1fr auto;
     row-gap: 0;
+  }
+  .companyItem {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .companyActions {
+    align-self: flex-end;
+  }
+  .readout {
+    font-size: var(--fs-xs);
   }
 }

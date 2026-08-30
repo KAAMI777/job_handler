@@ -2,7 +2,7 @@ import { Handle, Position } from "@xyflow/react";
 
 import styles from "./nodes.module.css";
 
-const hidden = { opacity: 0, pointerEvents: "none" };
+const hidden = { opacity: 0, pointerEvents: "none", top: "50%", left: "50%", transform: "translate(-50%,-50%)" };
 
 /** data: { company, roleCount, pulse, selected } */
 export default function CompanyNode({ data, selected }) {

@@ -45,16 +45,18 @@ export default function GraphCanvas({
 }) {
   const layout = useMemo(() => computeLayout(companies), [companies]);
   const [nodes, setNodes, onNodesChange] = useNodesState(layout.nodes);
-  const [edges, , onEdgesChange] = useEdgesState(layout.edges);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(layout.edges);
   const { fitView } = useReactFlow();
 
   const signature = idSignature(companies);
 
-  // Re-seed positions from the deterministic formula whenever the set of
+  // Re-seed positions + edges from the deterministic formula whenever the set of
   // companies changes (and on every mount / refresh). Drags are never persisted.
   useEffect(() => {
-    setNodes(layout.nodes);
-    const t = setTimeout(() => fitView({ duration: 300, padding: 0.18 }), 40);
+    const next = computeLayout(companies);
+    setNodes(next.nodes);
+    setEdges(next.edges);
+    const t = setTimeout(() => fitView({ duration: 300, padding: 0.2 }), 60);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signature]);

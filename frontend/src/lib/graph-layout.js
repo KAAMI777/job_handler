@@ -7,11 +7,12 @@
 
 export const FAMILY_CAPACITY = 8;
 
-const RING_0_RADIUS = 380;
-const RING_GAP = 300;
+const RING_0_RADIUS = 360;
+const RING_GAP = 340;
 const RING_0_FAMILIES = 6; // families that fit on the innermost ring
 const RING_FAMILY_GROWTH = 3; // extra family slots per outer ring
-const COMPANY_ORBIT = 150;
+const COMPANY_ORBIT = 200;
+const FAN_ARC = Math.PI * 0.62; // spread of a family's members, fanned outward
 
 const TAU = Math.PI * 2;
 
@@ -62,9 +63,12 @@ export function computeLayout(companies) {
     });
     edges.push({ id: `e-jobs-${familyId}`, source: "jobs", target: familyId, type: "glow" });
 
+    const n = members.length;
     members.forEach((company, j) => {
-      // Full circle around the family; start on the outward side.
-      const ca = angle + (j / FAMILY_CAPACITY) * TAU;
+      // Fan the members through an arc centred on the outward radial direction,
+      // so a family reads as a cluster hanging off its ring position.
+      const spread = n > 1 ? (j / (n - 1) - 0.5) * FAN_ARC : 0;
+      const ca = angle + spread;
       const cx = fx + Math.cos(ca) * COMPANY_ORBIT;
       const cy = fy + Math.sin(ca) * COMPANY_ORBIT;
       const companyId = `company-${company.id}`;

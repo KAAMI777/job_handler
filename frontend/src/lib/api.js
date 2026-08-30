@@ -1,7 +1,16 @@
 // One function per backend endpoint. Base URL from VITE_API_URL (Vercel / .env).
 
+import { authClient, authConfigured } from "./auth-client";
+
 export const API_BASE_URL =
   import.meta.env.VITE_API_URL ?? "http://127.0.0.1:8000";
+
+/** Bearer header for the current Supabase session, or {} when auth is off / signed out. */
+async function authHeader() {
+  if (!authConfigured) return {};
+  const { data } = await authClient.getSession();
+  return data.session ? { authorization: `Bearer ${data.session.access_token}` } : {};
+}
 
 export class ApiError extends Error {
   constructor(status, body, path) {
@@ -21,7 +30,10 @@ async function request(path, { method = "GET", body, params } = {}) {
   }
   const res = await fetch(url, {
     method,
-    headers: body ? { "content-type": "application/json" } : undefined,
+    headers: {
+      ...(body ? { "content-type": "application/json" } : {}),
+      ...(await authHeader()),
+    },
     body: body ? JSON.stringify(body) : undefined,
   });
   if (!res.ok) {
@@ -39,6 +51,10 @@ async function request(path, { method = "GET", body, params } = {}) {
 
 export const api = {
   health: () => request("/health"),
+
+  // auth
+  register: (payload) => request("/api/v1/auth/register", { method: "POST", body: payload }),
+  login: (payload) => request("/api/v1/auth/login", { method: "POST", body: payload }),
 
   // companies
   listCompanies: () => request("/api/v1/companies"),

@@ -1,8 +1,31 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 
 import { useHealth } from "@/hooks/queries";
+import { useAuth } from "@/lib/auth-context.js";
 
 import styles from "./Layout.module.css";
+
+function SignOut() {
+  const { authRequired, session, user, signOut } = useAuth();
+  const navigate = useNavigate();
+  if (!authRequired || !session) return null;
+
+  return (
+    <div className={styles.account}>
+      {user?.email && <span className={styles.who}>{user.email}</span>}
+      <button
+        type="button"
+        className={styles.signout}
+        onClick={async () => {
+          await signOut();
+          navigate("/login", { replace: true });
+        }}
+      >
+        exit
+      </button>
+    </div>
+  );
+}
 
 function ConnectionDot() {
   const { data, isError, isLoading } = useHealth();
@@ -37,6 +60,7 @@ export default function Layout({ transparentBar = false }) {
           </NavLink>
         </nav>
         <ConnectionDot />
+        <SignOut />
       </header>
       <main className={styles.main}>
         <Outlet />

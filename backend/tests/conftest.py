@@ -3,6 +3,12 @@ import os
 # A throwaway in-memory database so importing the app never needs a real Postgres.
 os.environ.setdefault("DATABASE_URL", "sqlite+pysqlite:///:memory:")
 
+from app.core.config import Settings
+
+# Tests define their own environment (often via monkeypatch); never let a developer's
+# local backend/.env bleed in and change auth / notification behaviour under test.
+Settings.model_config["env_file"] = None
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, text

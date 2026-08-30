@@ -30,6 +30,19 @@ class Settings(BaseSettings):
     cors_origins: list[str] = ["http://localhost:5173"]
     cors_origin_regex: str | None = r"https://job-handler-.*\.vercel\.app"
 
+    # Authentication. When ``auth_enabled`` is False (the default) every API route is open,
+    # matching the app's single-user origins. Flip it to True once the frontend signs users
+    # in through Supabase and ``supabase_jwt_secret`` is set (Supabase dashboard ->
+    # Project Settings -> API -> JWT Secret). ``service_token`` is an optional shared secret
+    # that lets machine callers (the scheduled scrape in GitHub Actions / n8n) authenticate
+    # with an ``X-Service-Token`` header instead of a user login.
+    auth_enabled: bool = False
+    supabase_jwt_secret: str | None = None  # legacy shared HS256 secret
+    supabase_url: str | None = None  # e.g. https://<ref>.supabase.co — enables JWKS (ES256/RS256)
+    # public anon key — lets the API call GoTrue for register / login
+    supabase_anon_key: str | None = None
+    service_token: str | None = None
+
     # Email digest of newly found relevant jobs after each scrape run.
     # All three must be set for mail to send; otherwise it is silently skipped.
     resend_api_key: str | None = None

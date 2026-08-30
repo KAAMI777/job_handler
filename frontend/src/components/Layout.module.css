@@ -92,6 +92,28 @@
   }
 }
 
+.account {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+.who {
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--tracking-label);
+  color: var(--text-dim);
+}
+.signout {
+  padding: 0;
+  background: none;
+  border: 0;
+  color: var(--text-secondary);
+  font-size: var(--fs-xs);
+  cursor: pointer;
+}
+.signout:hover {
+  color: var(--accent-bright);
+}
+
 .main {
   flex: 1;
   display: flex;

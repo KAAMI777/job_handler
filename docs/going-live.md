@@ -4,7 +4,7 @@
 
 1. Sign up at **resend.com** (free tier: 3,000 emails/month). Verify your account email.
 2. **API Keys → Create API Key** → copy the `re_...` value.
-3. Create a **root-level `.env`** (next to `docker-compose.yml`; it is gitignored):
+3. Copy `backend/.env.example` to **`backend/.env`** (gitignored) and fill in:
 
    ```
    RESEND_API_KEY=re_xxxxxxxx
@@ -12,6 +12,8 @@
    NOTIFY_FROM_EMAIL=onboarding@resend.dev
    NOTIFY_MIN_SCORE=0
    ```
+
+   `docker compose` and a direct `uvicorn` both read this one file.
 
 4. `docker compose up --build`
 5. Add a company that has India software roles, e.g.:
@@ -103,3 +105,32 @@ GitHub Actions (every 6h)
        └─ Render backend: scrape every active company → match → store → email digest
   └─ polls GET /scrape/run/{id} until done; fails the Actions job if the run failed
 ```
+
+## 6. Authentication (optional — off by default)
+
+Every API route and the dashboard are open until you switch this on. Auth uses **Supabase
+Auth** (same Supabase project as the database — no new service to host).
+
+Accounts are created through the app's own **/register** page (username, email, password);
+`POST /api/v1/auth/register` and `/login` wrap Supabase server-side.
+
+1. **Supabase dashboard → Authentication → Sign In / Providers**: enable **Email**. Turn
+   *Confirm email* **off** (there is no SMTP set up) — new registrations then get a session
+   immediately.
+2. **Authentication → URL Configuration**: set *Site URL* to your Vercel URL and add
+   `http://localhost:5173/**` plus `https://job-handler-*.vercel.app/**` as redirect URLs.
+3. **Settings → API Keys**: copy the *Project URL* (`https://<ref>.supabase.co`) and the
+   `anon` `public` key.
+4. Generate a service token for the cron: `openssl rand -hex 32`.
+5. **Render → Environment**: add `AUTH_ENABLED=true`, `SUPABASE_URL=https://<ref>.supabase.co`,
+   `SUPABASE_ANON_KEY=<anon key>`, `SERVICE_TOKEN=<the random hex>`. (Tokens are verified
+   against the project's published JWKS keys — no JWT secret needed. Projects still on the
+   legacy HS256 secret can set `SUPABASE_JWT_SECRET` from **Settings → JWT Keys** instead.)
+6. **Vercel → Environment Variables**: add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
+7. **GitHub → Settings → Secrets and variables → Actions → Secrets**: add `SERVICE_TOKEN`
+   with the same value as Render, so the scheduled scrape keeps working.
+8. Redeploy both. Visiting `/graph` or `/profile` now redirects to `/login`; register your
+   account at `/register`.
+
+Leaving `AUTH_ENABLED` unset (or `false`) and the `VITE_SUPABASE_*` vars blank keeps the
+app fully open — useful for local development.

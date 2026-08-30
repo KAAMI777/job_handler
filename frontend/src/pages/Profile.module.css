@@ -12,6 +12,37 @@
   gap: var(--sp-4);
   margin-bottom: var(--sp-6);
 }
+.identity {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+
+.greeting {
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.host {
+  color: var(--accent);
+}
+.path {
+  color: var(--accent-bright);
+}
+.punc {
+  color: var(--text-dim);
+}
+.name {
+  color: var(--text);
+}
+.caret {
+  margin-left: 3px;
+  vertical-align: baseline;
+}
+
 .h1 {
   display: flex;
   align-items: baseline;

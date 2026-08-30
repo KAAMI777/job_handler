@@ -13,6 +13,10 @@ jobs:
       - name: Trigger a scrape run and wait for it
         env:
           API_BASE_URL: ${{ vars.API_BASE_URL }}
+          # Optional: only needed once the backend has AUTH_ENABLED=true. Set it under
+          # Settings → Secrets and variables → Actions → Secrets, matching SERVICE_TOKEN
+          # on the backend. Harmless to leave unset while auth is off.
+          SERVICE_TOKEN: ${{ secrets.SERVICE_TOKEN }}
         run: |
           set -euo pipefail
           if [ -z "${API_BASE_URL:-}" ]; then
@@ -20,8 +24,11 @@ jobs:
             exit 1
           fi
 
+          auth=(-H "content-type: application/json")
+          [ -n "${SERVICE_TOKEN:-}" ] && auth+=(-H "X-Service-Token: ${SERVICE_TOKEN}")
+
           start=$(curl -sS -X POST "$API_BASE_URL/api/v1/scrape/run" \
-            -H 'content-type: application/json' -d '{"run_type":"scheduled"}')
+            "${auth[@]}" -d '{"run_type":"scheduled"}')
           echo "start: $start"
 
           run_id=$(echo "$start" | python3 -c 'import sys,json; d=json.load(sys.stdin); print(d.get("run_id") or d.get("detail",{}).get("run_id") or "")')
@@ -32,7 +39,7 @@ jobs:
 
           for _ in $(seq 1 120); do          # up to ~60 min
             sleep 30
-            run=$(curl -sS "$API_BASE_URL/api/v1/scrape/run/$run_id")
+            run=$(curl -sS "${auth[@]}" "$API_BASE_URL/api/v1/scrape/run/$run_id")
             status=$(echo "$run" | python3 -c 'import sys,json; print(json.load(sys.stdin)["status"])')
             echo "status: $status"
             if [ "$status" != "running" ]; then

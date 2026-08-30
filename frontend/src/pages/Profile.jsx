@@ -8,10 +8,12 @@ import RunLogPanel from "@/components/profile/RunLogPanel.jsx";
 import SavedJobsPanel from "@/components/profile/SavedJobsPanel.jsx";
 import StatsReadout from "@/components/profile/StatsReadout.jsx";
 import Panel from "@/components/ui/Panel.jsx";
+import { useAuth } from "@/lib/auth-context.js";
 
 import styles from "./Profile.module.css";
 
 export default function Profile() {
+  const { username } = useAuth();
   return (
     <motion.div
       className={styles.page}
@@ -21,9 +23,19 @@ export default function Profile() {
       transition={{ duration: 0.2 }}
     >
       <header className={styles.top}>
-        <h1 className={styles.h1}>
-          <span className={styles.prompt}>{">"}</span> profile
-        </h1>
+        <div className={styles.identity}>
+          <p className={styles.greeting}>
+            <span className={styles.host}>guest@site</span>
+            <span className={styles.punc}>:</span>
+            <span className={styles.path}>~</span>
+            <span className={styles.punc}>$</span> hi{" "}
+            <span className={styles.name}>{username}</span>
+            <span className={`${styles.caret} cursor-blink`} aria-hidden="true" />
+          </p>
+          <h1 className={styles.h1}>
+            <span className={styles.prompt}>{">"}</span> profile
+          </h1>
+        </div>
         <StatsReadout />
       </header>
 

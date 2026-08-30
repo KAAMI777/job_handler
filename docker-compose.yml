@@ -1,7 +1,6 @@
 # Local development: `docker compose up --build`
 # API on http://localhost:10000  (Swagger UI at /docs)
-# Optional email digest: put RESEND_API_KEY / NOTIFY_EMAIL in a root-level .env
-# file (gitignored) and docker compose picks them up automatically.
+# All backend config lives in ./backend/.env (gitignored; copy from backend/.env.example).
 services:
   db:
     image: postgres:16-alpine
@@ -20,14 +19,13 @@ services:
 
   backend:
     build: ./backend
+    env_file:
+      - ./backend/.env
     environment:
+      # Override: inside compose the backend talks to the `db` service, not localhost.
       DATABASE_URL: postgresql://postgres:postgres@db:5432/job_agent
       PORT: "10000"
       LOG_LEVEL: INFO
-      RESEND_API_KEY: ${RESEND_API_KEY:-}
-      NOTIFY_EMAIL: ${NOTIFY_EMAIL:-}
-      NOTIFY_FROM_EMAIL: ${NOTIFY_FROM_EMAIL:-onboarding@resend.dev}
-      NOTIFY_MIN_SCORE: ${NOTIFY_MIN_SCORE:-0}
     ports:
       - "10000:10000"
     depends_on:

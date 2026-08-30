@@ -1,29 +1,31 @@
 /* Job Agent — terminal design tokens.
-   One world: a Linux console. Monospace throughout is the world, not a costume. */
+   One world: a Linux console. Monospace throughout is the world, not a costume.
+   Accent: electric cyan/teal. Graph edges read as fibre-optic. */
 
 :root {
-  /* ---- surfaces (near-black, faint green cast) ---- */
-  --bg: #080b08;
-  --surface-1: #0d120d;
-  --surface-2: #121a12;
-  --surface-3: #18221a;
-  --overlay: rgba(4, 8, 4, 0.72);
+  /* ---- surfaces (near-black, faint blue cast) ---- */
+  --bg: #070a0d;
+  --surface-1: #0c1116;
+  --surface-2: #111a21;
+  --surface-3: #18242f;
+  --overlay: rgba(3, 6, 9, 0.72);
 
   /* ---- lines ---- */
-  --line: #1d2a1e;
-  --line-strong: #2b3d2c;
+  --line: #1c2833;
+  --line-strong: #2c3f4d;
 
-  /* ---- text (green-tinted greys, high contrast on --bg) ---- */
-  --text: #d3dfd2; /* ~13:1  body */
-  --text-secondary: #92a191; /* ~6:1   labels, meta */
-  --text-dim: #5f6f5e; /* decorative / disabled only */
+  /* ---- text (cool greys, high contrast on --bg) ---- */
+  --text: #d2dce5; /* ~13:1  body */
+  --text-secondary: #90a0af; /* ~6:1   labels, meta */
+  --text-dim: #5d6d7b; /* decorative / disabled only */
 
-  /* ---- accent: terminal green ---- */
-  --accent: #55f08c;
-  --accent-bright: #7dff9f;
-  --accent-dim: #2f7a4c;
-  --accent-wash: rgba(85, 240, 140, 0.12);
-  --accent-line: rgba(85, 240, 140, 0.32);
+  /* ---- accent: electric cyan / teal ---- */
+  --accent-rgb: 60, 232, 224;
+  --accent: #3ce8e0;
+  --accent-bright: #74f4ee;
+  --accent-dim: #1f807c;
+  --accent-wash: rgba(var(--accent-rgb), 0.12);
+  --accent-line: rgba(var(--accent-rgb), 0.32);
 
   /* ---- secondary signal: amber ---- */
   --amber: #f5c451;
@@ -66,8 +68,8 @@
 
   /* ---- elevation: offset + blur, never a flat halo ---- */
   --shadow-panel: 0 12px 32px -8px rgba(0, 0, 0, 0.7), 0 2px 8px -2px rgba(0, 0, 0, 0.5);
-  --glow-accent: 0 0 0 1px var(--accent-line), 0 0 18px -2px rgba(85, 240, 140, 0.35);
-  --glow-edge: drop-shadow(0 0 3px rgba(85, 240, 140, 0.55));
+  --glow-accent: 0 0 0 1px var(--accent-line), 0 0 18px -2px rgba(var(--accent-rgb), 0.35);
+  --glow-edge: drop-shadow(0 0 3px rgba(var(--accent-rgb), 0.55));
 
   /* ---- motion ---- */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);

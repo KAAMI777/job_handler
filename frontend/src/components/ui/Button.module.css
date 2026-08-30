@@ -47,7 +47,7 @@
   --bd: var(--accent-line);
 }
 .primary:hover:not(:disabled) {
-  --bg: rgba(85, 240, 140, 0.2);
+  --bg: rgba(var(--accent-rgb), 0.2);
   box-shadow: var(--glow-accent);
 }
 .primary .mark {

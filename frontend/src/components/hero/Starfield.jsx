@@ -52,7 +52,7 @@ export default function Starfield() {
         if (px < 0 || px > w || py < 0 || py > h) continue;
         const size = Math.max(0.4, (1 - s.z) * 1.8);
         const alpha = Math.min(0.7, (1 - s.z) * 0.9);
-        ctx.fillStyle = `rgba(120, 240, 170, ${alpha})`;
+        ctx.fillStyle = `rgba(120, 235, 240, ${alpha})`;
         ctx.fillRect(px, py, size, size);
       }
     };

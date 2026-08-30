@@ -15,7 +15,7 @@
   border-radius: 50%;
   background: radial-gradient(circle at 50% 40%, var(--surface-3), var(--surface-1));
   border: 1px solid var(--accent-line);
-  box-shadow: var(--glow-accent), inset 0 0 24px -6px rgba(85, 240, 140, 0.25);
+  box-shadow: var(--glow-accent), inset 0 0 24px -6px rgba(var(--accent-rgb), 0.25);
 }
 .jobsMark {
   font-size: 1.4rem;

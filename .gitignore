@@ -1,0 +1,32 @@
+# OS / editor
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Environment files (each package keeps its own .env.example)
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Node
+node_modules/
+dist/
+
+# Agent-skill tooling (installed locally, not part of the product)
+.agents/
+.claude/
+.codex/
+.github/skills/
+.github/agents/
+.github/hooks/
+.impeccable/
+/package.json
+/package-lock.json
+/skills-lock.json

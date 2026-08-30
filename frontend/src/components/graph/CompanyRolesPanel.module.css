@@ -1,0 +1,101 @@
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-panel);
+  background: rgba(2, 5, 2, 0.55);
+  backdrop-filter: blur(1px);
+}
+
+.panel {
+  position: fixed;
+  inset: 0 0 0 auto;
+  z-index: calc(var(--z-panel) + 1);
+  width: min(440px, 92vw);
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-1);
+  border-left: 1px solid var(--line-strong);
+  box-shadow: var(--shadow-panel);
+}
+
+.head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-5) var(--sp-5) var(--sp-3);
+}
+.name {
+  display: flex;
+  align-items: baseline;
+  gap: 0.3ch;
+  font-size: var(--fs-lg);
+  color: var(--text);
+}
+.prompt {
+  color: var(--accent);
+}
+.close {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+.close:hover {
+  color: var(--text);
+  border-color: var(--accent-line);
+}
+
+.sub {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: 0 var(--sp-5) var(--sp-3);
+  border-bottom: 1px solid var(--line);
+}
+.window {
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.sortToggle {
+  display: flex;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.sortToggle button {
+  padding: 0.25em 0.6em;
+  background: transparent;
+  border: 0;
+  border-right: 1px solid var(--line);
+  color: var(--text-secondary);
+  font-size: var(--fs-2xs);
+  cursor: pointer;
+}
+.sortToggle button:last-child {
+  border-right: 0;
+}
+.sortToggle button[data-on] {
+  background: var(--accent-wash);
+  color: var(--accent-bright);
+}
+
+.body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--sp-2) var(--sp-5) var(--sp-6);
+}
+.err {
+  padding: var(--sp-4) 0;
+  color: var(--danger);
+  font-size: var(--fs-sm);
+}

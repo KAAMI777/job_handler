@@ -1,0 +1,28 @@
+{
+  "hits": 2,
+  "jobs": [
+    {
+      "id": 2700123,
+      "id_icims": "10517816",
+      "title": "Software Development Engineer, Payments",
+      "normalized_location": "Bengaluru, Karnataka, IND",
+      "location": "IND, KA, Bengaluru",
+      "job_path": "/en/jobs/2700123/software-development-engineer-payments",
+      "job_schedule_type": "full-time",
+      "is_intern": false,
+      "posted_date": "August 20, 2026",
+      "description_short": "Build payment systems at scale."
+    },
+    {
+      "id": 2700124,
+      "id_icims": "10517817",
+      "title": "Software Dev Engineer Intern",
+      "normalized_location": "Hyderabad, Telangana, IND",
+      "job_path": "/en/jobs/2700124/software-dev-engineer-intern",
+      "job_schedule_type": "full-time",
+      "is_intern": true,
+      "posted_date": "August 21, 2026",
+      "description_short": "Summer internship."
+    }
+  ]
+}

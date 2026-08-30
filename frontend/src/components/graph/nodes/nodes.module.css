@@ -1,0 +1,150 @@
+.node {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  user-select: none;
+}
+
+/* ---- JOBS center ---- */
+.jobs {
+  flex-direction: column;
+  gap: 2px;
+  width: 118px;
+  height: 118px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 40%, var(--surface-3), var(--surface-1));
+  border: 1px solid var(--accent-line);
+  box-shadow: var(--glow-accent), inset 0 0 24px -6px rgba(var(--accent-rgb), 0.25);
+}
+.jobsMark {
+  font-size: 1.4rem;
+  color: var(--accent);
+  line-height: 1;
+}
+.jobsLabel {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: var(--accent-bright);
+}
+.jobsMeta {
+  font-size: var(--fs-2xs);
+  color: var(--text-secondary);
+}
+
+/* ---- FAMILY ---- */
+.family {
+  flex-direction: column;
+  gap: 1px;
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  border: 1px dashed var(--line-strong);
+  color: var(--text-secondary);
+}
+.family[data-full] {
+  border-style: solid;
+  border-color: var(--accent-line);
+}
+.familyName {
+  font-size: var(--fs-2xs);
+  letter-spacing: 0.04em;
+}
+.familyCount {
+  font-size: var(--fs-2xs);
+  color: var(--text-dim);
+}
+.family[data-full] .familyCount {
+  color: var(--accent);
+}
+
+/* ---- COMPANY ---- */
+.company {
+  position: relative;
+  gap: var(--sp-2);
+  max-width: 190px;
+  padding: 0.42em 0.72em;
+  background: var(--surface-1);
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out),
+    background var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
+}
+.company:hover {
+  color: var(--text);
+  border-color: var(--accent-line);
+  background: var(--surface-2);
+}
+.company[data-has-roles] {
+  color: var(--text);
+  border-color: var(--accent-line);
+}
+.company[data-selected] {
+  color: var(--accent-bright);
+  border-color: var(--accent);
+  background: var(--accent-wash);
+  box-shadow: var(--glow-accent);
+}
+.companyDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.55;
+  flex-shrink: 0;
+}
+.company[data-has-roles] .companyDot {
+  background: var(--accent);
+  opacity: 1;
+}
+.companyName {
+  font-size: var(--fs-xs);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.companyBadge {
+  font-size: var(--fs-2xs);
+  padding: 0 0.4em;
+  border-radius: 999px;
+  background: var(--accent-wash);
+  color: var(--accent-bright);
+  border: 1px solid var(--accent-line);
+  flex-shrink: 0;
+}
+
+.company[data-pulse]::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 999px;
+  border: 1px solid var(--accent);
+  animation: node-pulse 1.8s var(--ease-out) infinite;
+  pointer-events: none;
+}
+@keyframes node-pulse {
+  0% {
+    opacity: 0.7;
+    transform: scale(0.96);
+  }
+  70% {
+    opacity: 0;
+    transform: scale(1.35);
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .company[data-pulse]::after {
+    animation: none;
+    opacity: 0.5;
+  }
+}

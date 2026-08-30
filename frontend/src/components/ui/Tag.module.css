@@ -1,0 +1,35 @@
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.12em 0.5em;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  font-size: var(--fs-2xs);
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+.tag::before {
+  content: "#";
+  opacity: 0.5;
+  margin-right: 0.15em;
+}
+
+.accent {
+  color: var(--accent-bright);
+  border-color: var(--accent-line);
+  background: var(--accent-wash);
+}
+.amber {
+  color: var(--amber);
+  border-color: rgba(245, 196, 81, 0.32);
+  background: var(--amber-wash);
+}
+.danger {
+  color: var(--danger);
+  border-color: rgba(255, 107, 94, 0.32);
+  background: var(--danger-wash);
+}
+.muted::before {
+  opacity: 0.35;
+}

@@ -1,0 +1,72 @@
+.btn {
+  --bg: transparent;
+  --fg: var(--text);
+  --bd: var(--line-strong);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 0.44em 0.9em;
+  background: var(--bg);
+  color: var(--fg);
+  border: 1px solid var(--bd);
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-sm);
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
+}
+
+.mark {
+  color: var(--accent);
+  opacity: 0.7;
+}
+
+.btn:hover:not(:disabled) {
+  --bd: var(--accent-line);
+  background: var(--accent-wash);
+}
+.btn:active:not(:disabled) {
+  translate: 0 1px;
+}
+.btn:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+.btn[data-loading] {
+  cursor: progress;
+}
+
+.primary {
+  --bg: var(--accent-wash);
+  --fg: var(--accent-bright);
+  --bd: var(--accent-line);
+}
+.primary:hover:not(:disabled) {
+  --bg: rgba(var(--accent-rgb), 0.2);
+  box-shadow: var(--glow-accent);
+}
+.primary .mark {
+  opacity: 1;
+}
+
+.danger {
+  --fg: var(--danger);
+  --bd: rgba(255, 107, 94, 0.32);
+}
+.danger:hover:not(:disabled) {
+  background: var(--danger-wash);
+  --bd: var(--danger);
+}
+.danger .mark {
+  color: var(--danger);
+}
+
+.sm {
+  padding: 0.3em 0.6em;
+  font-size: var(--fs-xs);
+}

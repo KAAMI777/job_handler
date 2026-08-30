@@ -1,0 +1,20 @@
+{
+  "operationResult": {
+    "result": {
+      "totalJobs": 1,
+      "jobs": [
+        {
+          "jobId": "1812345",
+          "title": "Software Engineer II",
+          "properties": {
+            "primaryLocation": "Hyderabad, Telangana, India",
+            "locations": ["Hyderabad, Telangana, India"],
+            "employmentType": "Full-Time",
+            "description": "Ship cloud services."
+          },
+          "postingDate": "2026-08-15T00:00:00Z"
+        }
+      ]
+    }
+  }
+}

@@ -1,29 +1,32 @@
-import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import text          # ← ADD THIS
-from .db import engine
 
-app = FastAPI()
+from app.api.health import router as health_router
+from app.api.v1.auth import router as auth_router
+from app.api.v1.router import api_router
+from app.core.config import get_settings
+from app.core.logging import configure_logging
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "https://job-handler.vercel.app",
-    ],
-    allow_origin_regex=r"https://job-handler-.*\.vercel\.app",
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
-@app.get("/health")
-def health():
-    with engine.connect() as conn:
-        conn.execute(text("SELECT 1"))
+def create_app() -> FastAPI:
+    configure_logging()
+    settings = get_settings()
 
-    return {
-        "status": "ok",
-        "database": "connected"
-    }
+    app = FastAPI(title="Job Agent API")
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.cors_origins,
+        allow_origin_regex=settings.cors_origin_regex,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+    app.include_router(health_router)
+    app.include_router(auth_router, prefix="/api/v1")  # open: /api/v1/auth/register, /login
+    app.include_router(api_router)
+    return app
+
+
+app = create_app()
